@@ -45,7 +45,7 @@
               </Button>
               <!-- <Button icon="md-add" @click="showCollect()">增加</Button> -->
             </Form-item>
-            
+
             <Modal
               title="查看用户信息详情"
               width="55"
@@ -72,8 +72,11 @@
                   <Col span="10">VIP过期时间: {{viewData.Detail.vipPastTime}}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">充值VIP次数: {{viewData.Detail.vipCount}}</Col>
+                  <Col span="10">日免费次数: {{viewData.Detail.vipServiceNum}}</Col>
                   <Col span="10">周免费次数: {{viewData.Detail.vipServiceNum}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">充值VIP次数: {{viewData.Detail.vipCount}}</Col>
                 </Row>
               </div>
             </Modal>
@@ -107,10 +110,8 @@
 </template>
 <script>
 import axios from 'axios'
-import qs from 'qs'
-
 export default {
-  data() {
+  data () {
     return {
       fileName: '',
       uploadFile: {},
@@ -254,14 +255,14 @@ export default {
     }
   },
   methods: {
-    showImg(ad_picture_url) {
+    showImg (ad_picture_url) {
       this.$Modal.info({
         title: '预览图片',
         closable: true,
         content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
       })
     },
-    onDeleteBtn() {
+    onDeleteBtn () {
       axios
         .delete('/api/user/delete', {
           data: {
@@ -273,26 +274,26 @@ export default {
           this.searchManage()
         })
     },
-    showDetail(row) {
+    showDetail (row) {
       this.viewData.modalDetail = true
       this.viewData.Detail = row
       this.viewData.userId = row.userId
     },
-    onModelCancel() {
+    onModelCancel () {
       this.searchManage()
     },
-    searchPageReturn() {
+    searchPageReturn () {
       this.searchList.searchCondition.page = 1
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
-    onPageChange(pageNum) {
+    onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
-    searchManage() {
+    searchManage () {
       axios
-        .get(`/api/user/list`, {
+        .get('/api/user/list', {
           params: {
             page: this.searchList.searchCondition.page,
             contactName: this.searchList.searchCondition.contactName,
@@ -305,12 +306,12 @@ export default {
           this.searchList.pageData.total = res.data.total
         })
     },
-    searchDetail() {
+    searchDetail () {
       axios
         .get('/api/user/personal_detail', {
           params: {
             userId: this.viewData.Detail.userId,
-            role: this.viewData.Detail.role,
+            role: this.viewData.Detail.role
           }
         })
         .then(res => {
@@ -318,7 +319,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.searchManage()
   }
 }
