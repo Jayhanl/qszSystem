@@ -48,31 +48,55 @@ export default [{
   }]
 },
 {
-  path: '/order',
-  name: 'order',
+  path: '/qsz',
+  name: '轻松装',
+  meta: {
+    icon: 'ios-people',
+    title: '轻松装'
+  },
   component: Main,
   children: [{
-    path: 'manage_order',
-    name: 'manage_order',
+    path: 'qsz_order_list',
+    name: 'qsz_order_list',
     meta: {
       icon: 'md-list-box',
       title: '订单列表'
     },
-    component: () => import('@/view/manage/manage_order.vue')
-  }]
-},
-{
-  path: '/user',
-  name: 'user',
-  component: Main,
-  children: [{
-    path: 'user_manage',
-    name: 'user_manage',
+    component: () => import('@/view/qsz/order_list.vue')
+  }, {
+    path: 'qsz_user_list',
+    name: 'qsz_user_list',
     meta: {
       icon: 'md-contacts',
       title: '用户管理'
     },
-    component: () => import('@/view/user/user_manage.vue')
+    component: () => import('@/view/qsz/user_list.vue')
+  }]
+},
+{
+  path: '/platform',
+  name: '市井服务信息平台',
+  meta: {
+    icon: 'ios-people',
+    title: '市井服务信息平台'
+  },
+  component: Main,
+  children: [{
+    path: 'platform_order_list',
+    name: 'platform_order_list',
+    meta: {
+      icon: 'md-list-box',
+      title: '订单列表'
+    },
+    component: () => import('@/view/platform/order_list.vue')
+  }, {
+    path: 'platform_user_list',
+    name: 'platform_user_list',
+    meta: {
+      icon: 'md-contacts',
+      title: '用户管理'
+    },
+    component: () => import('@/view/platform/user_list.vue')
   }]
 },
 {

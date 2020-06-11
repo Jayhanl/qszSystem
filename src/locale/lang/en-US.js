@@ -13,5 +13,9 @@ export default {
   user_merchant: '组织注册列表',
   user_person: '个人注册列表',
   user_manage: '用户管理',
-  course_manage: '用户管理'
+  course_manage: '用户管理',
+  platform_order_list: '订单管理',
+  platform_user_list: '用户管理',
+  qsz_order_list: '订单管理',
+  qsz_user_list: '用户管理'
 }

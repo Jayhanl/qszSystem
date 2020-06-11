@@ -20,7 +20,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
 //   }
 //   if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
 // }
-const root = process.env.NODE_ENV === 'production' ? '' : '/api'// https://maintain.zhiwei99.com
+const root = process.env.NODE_ENV === 'production' ? '' : ''// https://maintain.zhiwei99.com
 class HttpRequest {
   constructor (baseUrl = baseURL) {
     this.baseUrl = baseUrl
