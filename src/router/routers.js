@@ -1,5 +1,5 @@
 import Main from '@/components/main'
-// import parentView from '@/components/parent-view'
+import parentView from '@/components/parent-view'
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -51,7 +51,7 @@ export default [{
   path: '/qsz',
   name: '轻松装',
   meta: {
-    icon: 'ios-people',
+    icon: 'ios-construct',
     title: '轻松装'
   },
   component: Main,
@@ -74,30 +74,82 @@ export default [{
   }]
 },
 {
-  path: '/platform',
-  name: '市井服务信息平台',
+  path: '/qsz_pf',
+  name: '轻松装平台',
   meta: {
-    icon: 'ios-people',
-    title: '市井服务信息平台'
+    icon: 'ios-construct',
+    title: '轻松装'
   },
   component: Main,
   children: [{
-    path: 'platform_order_list',
-    name: 'platform_order_list',
+    path: 'qsz_pf_order_list',
+    name: 'qsz_pf_order_list',
     meta: {
       icon: 'md-list-box',
       title: '订单列表'
     },
-    component: () => import('@/view/platform/order_list.vue')
+    component: () => import('@/view/qsz_pf/order_list.vue')
   }, {
-    path: 'platform_user_list',
-    name: 'platform_user_list',
+    path: 'qsz_pf_user_list',
+    name: 'qsz_pf_user_list',
     meta: {
       icon: 'md-contacts',
       title: '用户管理'
     },
-    component: () => import('@/view/platform/user_list.vue')
+    component: () => import('@/view/qsz_pf/user_list.vue')
   }]
+},
+{
+  path: '/platform',
+  name: '市井服务信息平台',
+  meta: {
+    icon: 'ios-apps',
+    title: '市井服务信息平台'
+  },
+  component: Main,
+  children: [
+    {
+      path: '/qssh',
+      name: '轻松生活',
+      meta: {
+        icon: 'md-beer',
+        title: '轻松生活'
+      },
+      component: parentView,
+      children: [{
+        path: 'qssh_sq_list',
+        name: '社区列表',
+        meta: {
+          icon: 'ios-list',
+          title: '社区列表'
+        },
+        component: () => import('@/view/qssh/sq_list.vue')
+      }, {
+        path: 'qssh_order_list',
+        name: '需求列表',
+        meta: {
+          icon: 'md-list-box',
+          title: '需求列表'
+        },
+        component: () => import('@/view/qssh/order_list.vue')
+      }]
+    }, {
+      path: 'platform_order_list',
+      name: 'platform_order_list',
+      meta: {
+        icon: 'md-list-box',
+        title: '订单列表'
+      },
+      component: () => import('@/view/platform/order_list.vue')
+    }, {
+      path: 'platform_user_list',
+      name: 'platform_user_list',
+      meta: {
+        icon: 'md-contacts',
+        title: '用户管理'
+      },
+      component: () => import('@/view/platform/user_list.vue')
+    }]
 },
 {
   path: '/admin',

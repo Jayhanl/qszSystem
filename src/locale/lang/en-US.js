@@ -17,5 +17,7 @@ export default {
   platform_order_list: '订单管理',
   platform_user_list: '用户管理',
   qsz_order_list: '订单管理',
-  qsz_user_list: '用户管理'
+  qsz_user_list: '用户管理',
+  qsz_pf_order_list: '订单管理',
+  qsz_pf_user_list: '用户管理'
 }
