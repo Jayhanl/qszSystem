@@ -45,14 +45,14 @@ module.exports = {
         }
       },
       '/sjwh': {
-        target: 'http://192.168.3.41:9405', // 要请求的后台地址
+        target: 'http://192.168.3.41:9405', // http://192.168.3.41:9405
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           '^/sjwh': '/sjwh' // 这里理解成用‘/api’代替target里面的地址，后面组件中我们掉接口时直接用api代替
         }
       },
       '/qsz_pf': {
-        target: 'http://139.9.38.211:9409', // 要请求的后台地址
+        target: 'http://139.9.38.211:9409', //
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           '^/qsz_pf': '/qsz_pf' // 这里理解成用‘/api’代替target里面的地址，后面组件中我们掉接口时直接用api代替

@@ -125,6 +125,14 @@ export default [{
         },
         component: () => import('@/view/qssh/sq_list.vue')
       }, {
+        path: 'qssh_kw_list',
+        name: '关键词列表',
+        meta: {
+          icon: 'ios-list',
+          title: '关键词列表'
+        },
+        component: () => import('@/view/qssh/kw_list.vue')
+      }, {
         path: 'qssh_order_list',
         name: '需求列表',
         meta: {

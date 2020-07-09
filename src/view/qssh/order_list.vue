@@ -21,6 +21,19 @@
               ></Input>
               <Select
                 clearable
+                placeholder="关键词"
+                @on-change="searchManage"
+                v-model="searchList.searchCondition.keywordId"
+                class="search_item"
+              >
+                <Option
+                  v-for="item in viewData.kwList"
+                  :value="item.id"
+                  :key="item.id"
+                >{{ item.kName }}</Option>
+              </Select>
+              <Select
+                clearable
                 placeholder="需求状态"
                 @on-change="searchManage"
                 v-model="searchList.searchCondition.status"
@@ -148,6 +161,7 @@
                   <Col span="10">社区: {{viewData.Detail.housingName}}</Col>
                   <Col span="10">需求标题: {{viewData.Detail.title}}</Col>
                 </Row>
+                <h4>关键词: {{viewData.Detail.keywordChina}}</h4>
                 <h4>需求内容: {{viewData.Detail.content}}</h4>
                 <Row>
                   <Col span="20">
@@ -217,6 +231,11 @@ export default {
             key: 'contactMobile'
           },
           {
+            title: '关键词',
+            align: 'center',
+            key: 'keywordChina'
+          },
+          {
             title: '社区',
             align: 'center',
             key: 'housingName'
@@ -235,6 +254,40 @@ export default {
             title: '创建时间',
             align: 'center',
             key: 'createTime'
+          },
+          {
+            title: '是否推荐',
+            align: 'center',
+            key: 'action',
+            render: (h, params) => {
+              return h('i-switch', {
+                props: {
+                  value: params.row.isRecommend,
+                  'false-value': 0,
+                  'true-value': 1,
+                  size: 'large'
+                },
+                slot: {},
+                on: {
+                  'on-change': e => {
+                    axios
+                      .put(
+                        '/sjwh/demand/update_is_recommend',
+                        qs.stringify({
+                          id: params.row.id,
+                          isRecommend: e
+                        })
+                      )
+                      .then(() => {
+                        this.$Message.success('操作成功!')
+                      })
+                      .catch(() => {
+                        this.searchManage()
+                      })
+                  }
+                }
+              })
+            }
           },
           {
             title: '操作',
@@ -307,6 +360,7 @@ export default {
         modalRefuse: false,
         modalPass: false,
         sqList: {},
+        kwList: [],
         statusList: [
           {
             value: 0,
@@ -449,6 +503,7 @@ export default {
             title: this.searchList.searchCondition.title,
             contactMobile: this.searchList.searchCondition.contactMobile,
             housingId: this.searchList.searchCondition.housingId,
+            keywordId: this.searchList.searchCondition.keywordId,
             status: this.searchList.searchCondition.status
           }
         })
@@ -469,7 +524,6 @@ export default {
         })
     },
     searchSq () {
-      console.log(this.searchList.searchCondition.pid)
       axios
         .get('/sjwh/housing/list', {
           params: {
@@ -481,11 +535,19 @@ export default {
         .then(response => {
           this.viewData.sqList = response.data.data
         })
+    },
+    searchKw () {
+      axios
+        .get('/sjwh/qsh_keyword/list')
+        .then(response => {
+          this.viewData.kwList = response.data
+        })
     }
   },
   created () {
     this.searchManage()
     this.searchSq()
+    this.searchKw()
   }
 }
 </script>
