@@ -74,7 +74,7 @@
         </Form>
         <Form-item style="padding-top: 10px;">
           <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
-          <Page style="padding-top: 10px" :total="searchList.pageData.total" :current="searchList.pageData.pageNum"
+          <Page style="padding-top: 10px" :total="searchList.pageData.total" :current="searchList.searchCondition.page"
             :page-size="10" @on-change="onPageChange" size="small" show-total></Page>
         </Form-item>
       </Form-item>
@@ -83,254 +83,252 @@
   </Row>
 </template>
 <script>
-  import axios from 'axios'
-  import qs from 'qs'
+import axios from 'axios'
+import qs from 'qs'
 
-  export default {
-    data() {
-      return {
-        fileName: '',
-        uploadFile: {},
-        searchList: {
-          Info: [],
-          columns: [{
-              title: "头像",
-              width: 140,
-              key: "avatarUrl",
-              render: (h, params) => {
-                return h("div", [
-                  h("img", {
-                    attrs: {
-                      src: params.row.avatarUrl
-                    },
-                    style: {
-                      width: "100px",
-                      height: "100px"
-                    },
-                    on: {
-                      click: () => {
-                        this.showImg(params.row.avatarUrl);
-                      }
-                    }
-                  })
-                ]);
-              }
-            }, {
-              title: 'id',
-              align: 'center',
-              key: 'id',
-              width: 120
-            },
-            {
-              title: '管理员名',
-              align: 'center',
-              key: 'name'
-            },
-            {
-              title: '账号',
-              align: 'center',
-              key: 'account'
-            },
-            {
-              title: '操作',
-              key: 'action',
-              width: 200,
-              align: 'center',
-              render: (h, params) => {
-                return h("div", [
-                  h(
-                    "Button", {
-                      props: {
-                        type: "primary",
-                        size: "small"
-                      },
-                      style: {
-                        marginRight: "15px"
-                      },
-                      on: {
-                        click: () => {
-                          this.showEdit(params.row);
-                        }
-                      }
-                    },
-                    "编辑"
-                  ),
-                  h(
-                    "Button", {
-                      props: {
-                        type: "error",
-                        size: "small"
-                      },
-                      style: {
-                        marginRight: "15px"
-                      },
-                      on: {
-                        click: () => {
-                          this.showDelete(params.row);
-                        }
-                      }
-                    },
-                    "删除"
-                  )
-                ]);
-              }
-            }
-          ],
-          data: [],
-          pageData: {
-            content: [],
-            pageNum: 1,
-            numberOfElements: 0,
-            total: 0,
-            totalPages: 0,
-            size: 5,
-            rankTime: ''
-          },
-          searchCondition: {
-            page: 1,
-            size: 5
-          },
-          pageSizeOpts: [1, 5, 10, 20, 30, 40]
+export default {
+  data () {
+    return {
+      fileName: '',
+      uploadFile: {},
+      searchList: {
+        Info: [],
+        columns: [{
+          title: '头像',
+          width: 140,
+          key: 'avatarUrl',
+          render: (h, params) => {
+            return h('div', [
+              h('img', {
+                attrs: {
+                  src: params.row.avatarUrl
+                },
+                style: {
+                  width: '100px',
+                  height: '100px'
+                },
+                on: {
+                  click: () => {
+                    this.showImg(params.row.avatarUrl)
+                  }
+                }
+              })
+            ])
+          }
+        }, {
+          title: 'id',
+          align: 'center',
+          key: 'id',
+          width: 120
         },
-        viewData: {
-          Add: {
-            categoryName: '',
-            listorder: ''
-          },
-          Edit: {
-            categoryName: '',
-            listorder: ''
-          },
-          ImgSrc: '',
-          Delete: {},
-          modalEdit: false,
-          modalAdd: false,
-          modalDelete: false,
-          Confirm: ''
+        {
+          title: '管理员名',
+          align: 'center',
+          key: 'name'
+        },
+        {
+          title: '账号',
+          align: 'center',
+          key: 'account'
+        },
+        {
+          title: '操作',
+          key: 'action',
+          width: 200,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h(
+                'Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '15px'
+                  },
+                  on: {
+                    click: () => {
+                      this.showEdit(params.row)
+                    }
+                  }
+                },
+                '编辑'
+              ),
+              h(
+                'Button', {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '15px'
+                  },
+                  on: {
+                    click: () => {
+                      this.showDelete(params.row)
+                    }
+                  }
+                },
+                '删除'
+              )
+            ])
+          }
         }
+        ],
+        data: [],
+        pageData: {
+          content: [],
+          pageNum: 1,
+          numberOfElements: 0,
+          total: 0,
+          totalPages: 0,
+          size: 5,
+          rankTime: ''
+        },
+        searchCondition: {
+          page: 1,
+          size: 5
+        },
+        pageSizeOpts: [1, 5, 10, 20, 30, 40]
+      },
+      viewData: {
+        Add: {
+          categoryName: '',
+          listorder: ''
+        },
+        Edit: {
+          categoryName: '',
+          listorder: ''
+        },
+        ImgSrc: '',
+        Delete: {},
+        modalEdit: false,
+        modalAdd: false,
+        modalDelete: false,
+        Confirm: ''
       }
-    },
-    methods: {
-      showImg(ad_picture_url) {
-        this.$Modal.info({
-          title: "预览图片",
-          closable: true,
-          content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
-        });
-      },
-      changeImage(e) {
-        let file = e.target.files[0];
-        let reader = new FileReader();
-        let that = this;
-        reader.readAsDataURL(file);
-        reader.onload = function (e) {
-          that.viewData.ImgSrc = this.result;
-        }
-      },
-      onDeleteBtn() {
-        axios
-          .delete("/api/admin/delete", {
-            data: {
-              id: this.viewData.Delete.id
-            }
-          })
-          .then(response => {
-            this.$Message.success("删除成功!");
-            this.searchManage();
-          });
-      },
-      onAddBtn() {
-        this.$Message.warning("上传中，请稍后...");
-        axios
-          .post(
-            "/api/admin/create",
-            qs.stringify({
-              name: this.viewData.Add.name,
-              account: this.viewData.Add.account,
-              password: this.viewData.Add.password,
-              rolePath: ['manage'],
-              avatarUrl: this.viewData.ImgSrc
-            })
-          )
-          .then(response => {
-            this.viewData.Add = {};
-            this.searchManage();
-            this.$Message.success("添加成功!");
-          });
-
-      },
-      onEditBtn() {
-        this.$Message.warning("上传中，请稍后...");
-        let image = {
-          id: this.viewData.Edit.id,
-          name: this.viewData.Edit.name,
-          password: this.viewData.Edit.password,
-          // rolePath: ['manage']
-        };
-        if (this.viewData.Edit.avatarUrl !== this.viewData.ImgSrc) {
-          image.avatarUrl = this.viewData.ImgSrc;
-        }
-        axios
-          .put(
-            "/api/admin/update",
-            image
-          )
-          .then(response => {
-            this.viewData.ImgSrc = '';
-            this.$refs.avatarInput.value = "";
-            this.viewData.Edit = {};
-            this.searchManage();
-            this.$Message.success("编辑成功!");
-          })
-          .catch(() => {
-            this.searchManage();
-          });
-
-      },
-      onModelCancel() {
-        this.viewData.ImgSrc = '';
-        this.$refs.avatarInput.value = "";
-        this.searchManage()
-      },
-      showAdd() {
-        this.viewData.modalAdd = true;
-      },
-      showEdit(item) {
-        this.viewData.Edit = item;
-        this.viewData.ImgSrc = item.avatarUrl;
-        this.viewData.modalEdit = true;
-      },
-      showDelete(item) {
-        this.viewData.Delete = item;
-        this.viewData.modalDelete = true;
-      },
-      searchPageReturn() {
-        this.searchList.searchCondition.page = 1
-        this.searchManage()
-        this.$Message.success('搜索完成!')
-      },
-      onPageChange(pageNum) {
-        this.searchList.searchCondition.page = pageNum
-        this.searchManage()
-      },
-      searchManage() {
-        axios
-          .get(`/api/admin/get`, {
-            params: {
-              page: this.searchList.searchCondition.page,
-              name: this.searchList.searchCondition.name
-            }
-          })
-          .then(res => {
-            this.searchList.pageData.content = res.data.data
-            this.searchList.pageData.total = res.data.total;
-          })
-      }
-    },
-    created() {
-      this.searchManage()
     }
+  },
+  methods: {
+    showImg (ad_picture_url) {
+      this.$Modal.info({
+        title: '预览图片',
+        closable: true,
+        content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
+      })
+    },
+    changeImage (e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      const that = this
+      reader.readAsDataURL(file)
+      reader.onload = function (e) {
+        that.viewData.ImgSrc = this.result
+      }
+    },
+    onDeleteBtn () {
+      axios
+        .delete('/api/admin/delete', {
+          data: {
+            id: this.viewData.Delete.id
+          }
+        })
+        .then(response => {
+          this.$Message.success('删除成功!')
+          this.searchManage()
+        })
+    },
+    onAddBtn () {
+      this.$Message.warning('上传中，请稍后...')
+      axios
+        .post(
+          '/api/admin/create',
+          qs.stringify({
+            name: this.viewData.Add.name,
+            account: this.viewData.Add.account,
+            password: this.viewData.Add.password,
+            rolePath: ['manage'],
+            avatarUrl: this.viewData.ImgSrc
+          })
+        )
+        .then(response => {
+          this.viewData.Add = {}
+          this.searchManage()
+          this.$Message.success('添加成功!')
+        })
+    },
+    onEditBtn () {
+      this.$Message.warning('上传中，请稍后...')
+      const image = {
+        id: this.viewData.Edit.id,
+        name: this.viewData.Edit.name,
+        password: this.viewData.Edit.password
+        // rolePath: ['manage']
+      }
+      if (this.viewData.Edit.avatarUrl !== this.viewData.ImgSrc) {
+        image.avatarUrl = this.viewData.ImgSrc
+      }
+      axios
+        .put(
+          '/api/admin/update',
+          image
+        )
+        .then(response => {
+          this.viewData.ImgSrc = ''
+          this.$refs.avatarInput.value = ''
+          this.viewData.Edit = {}
+          this.searchManage()
+          this.$Message.success('编辑成功!')
+        })
+        .catch(() => {
+          this.searchManage()
+        })
+    },
+    onModelCancel () {
+      this.viewData.ImgSrc = ''
+      this.$refs.avatarInput.value = ''
+      this.searchManage()
+    },
+    showAdd () {
+      this.viewData.modalAdd = true
+    },
+    showEdit (item) {
+      this.viewData.Edit = item
+      this.viewData.ImgSrc = item.avatarUrl
+      this.viewData.modalEdit = true
+    },
+    showDelete (item) {
+      this.viewData.Delete = item
+      this.viewData.modalDelete = true
+    },
+    searchPageReturn () {
+      this.searchList.searchCondition.page = 1
+      this.searchManage()
+      this.$Message.success('搜索完成!')
+    },
+    onPageChange (pageNum) {
+      this.searchList.searchCondition.page = pageNum
+      this.searchManage()
+    },
+    searchManage () {
+      axios
+        .get('/api/admin/get', {
+          params: {
+            page: this.searchList.searchCondition.page,
+            name: this.searchList.searchCondition.name
+          }
+        })
+        .then(res => {
+          this.searchList.pageData.content = res.data.data
+          this.searchList.pageData.total = res.data.total
+        })
+    }
+  },
+  created () {
+    this.searchManage()
   }
+}
 
 </script>
 <style>

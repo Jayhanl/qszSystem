@@ -89,7 +89,7 @@
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
-              :current="searchList.pageData.pageNum"
+              :current="searchList.searchCondition.page"
               :page-size="10"
               @on-change="onPageChange"
               size="small"
@@ -106,7 +106,7 @@ import axios from 'axios'
 import qs from 'qs'
 
 export default {
-  data() {
+  data () {
     return {
       fileName: '',
       uploadFile: {},
@@ -211,7 +211,7 @@ export default {
     }
   },
   methods: {
-    onDeleteBtn() {
+    onDeleteBtn () {
       axios
         .delete('/api/message/delete', {
           data: {
@@ -223,7 +223,7 @@ export default {
           this.searchManage()
         })
     },
-    onAddBtn() {
+    onAddBtn () {
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
@@ -239,7 +239,7 @@ export default {
           this.$Message.success('添加成功!')
         })
     },
-    onEditBtn() {
+    onEditBtn () {
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
@@ -259,32 +259,32 @@ export default {
           this.searchManage()
         })
     },
-    onModelCancel() {
+    onModelCancel () {
       this.searchManage()
     },
-    showAdd() {
+    showAdd () {
       this.viewData.modalAdd = true
     },
-    showEdit(item) {
+    showEdit (item) {
       this.viewData.Edit = item
       this.viewData.modalEdit = true
     },
-    showDelete(item) {
+    showDelete (item) {
       this.viewData.Delete = item
       this.viewData.modalDelete = true
     },
-    searchPageReturn() {
+    searchPageReturn () {
       this.searchList.searchCondition.page = 1
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
-    onPageChange(pageNum) {
+    onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
-    searchManage() {
+    searchManage () {
       axios
-        .get(`/api/message/get`, {
+        .get('/api/message/get', {
           params: {
             page: this.searchList.searchCondition.page,
             msgTitle: this.searchList.searchCondition.msgTitle
@@ -296,7 +296,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.searchManage()
   }
 }

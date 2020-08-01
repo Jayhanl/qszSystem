@@ -90,28 +90,6 @@
             </Modal>
             <Modal
               :mask-closable="false"
-              title="上门确认"
-              width="400"
-              v-model="viewData.modalTogo"
-              @on-ok="onTogo()"
-            >
-              确认订单id：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
-              已上门吗？
-            </Modal>
-            <Modal
-              :mask-closable="false"
-              title="到达确认"
-              width="400"
-              v-model="viewData.modalArrive"
-              @on-ok="onArrive()"
-            >
-              确认订单id：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
-              已到达吗？
-            </Modal>
-            <Modal
-              :mask-closable="false"
               title="完成确认"
               width="400"
               v-model="viewData.modalPass"
@@ -123,90 +101,14 @@
             </Modal>
             <Modal
               :mask-closable="false"
-              title="派遣订单确认"
+              title="派遣确认"
               width="400"
-              v-model="viewData.modalDispatch1"
+              v-model="viewData.modalDispatch"
               @on-ok="onDispatch()"
             >
-              确认派遣订单给员工：
-              <span style="color:red">{{viewData.Confirm.name}}</span>
+              确认已派遣订单id：
+              <span style="color:red">{{viewData.Confirm.orderId}}</span>
               吗？
-            </Modal>
-            <Modal
-              :mask-closable="false"
-              :title="'订单：'+viewData.Dispatch.orderId+'派遣'"
-              width="60"
-              v-model="viewData.modalDispatch"
-            >
-              <Form>
-                <Form-item>
-                  <Input
-                    class="search_item"
-                    type="text"
-                    v-model="searchList.searchCondition1.name"
-                    clearable
-                    placeholder="姓名"
-                  ></Input>
-                  <Select
-                    clearable
-                    placeholder="是否空闲"
-                    @on-change="searchManage"
-                    v-model="searchList.searchCondition1.isFree"
-                    class="search_item"
-                  >
-                    <Option
-                      v-for="item in viewData.statusList1"
-                      :value="item.value"
-                      :key="item.value"
-                    >{{ item.label }}</Option>
-                  </Select>
-                  <Select
-                    clearable
-                    placeholder="员工身份"
-                    @on-change="searchManage"
-                    v-model="searchList.searchCondition1.role"
-                    class="search_item"
-                  >
-                    <Option
-                      v-for="item in viewData.roleList"
-                      :value="item.value"
-                      :key="item.value"
-                    >{{ item.label }}</Option>
-                  </Select>
-                  <Select
-                    clearable
-                    placeholder="派单模式"
-                    @on-change="searchManage"
-                    v-model="searchList.searchCondition1.orderModel"
-                    class="search_item"
-                  >
-                    <Option
-                      v-for="item in viewData.pdList"
-                      :value="item.value"
-                      :key="item.value"
-                    >{{ item.label }}</Option>
-                  </Select>
-                  <Button style="margin-right:10px" @click="searchPageReturn1">
-                    <Icon size="18" type="ios-search" />
-                  </Button>
-                </Form-item>
-                <Form-item style="padding-top: 10px;">
-                  <i-table
-                    border
-                    :columns="searchList.columns1"
-                    :data="searchList.pageData1.content"
-                  ></i-table>
-                  <Page
-                    style="padding-top: 10px"
-                    :total="searchList.pageData1.total"
-                    :current="searchList.searchCondition1.page"
-                    :page-size="10"
-                    @on-change="onPageChange1"
-                    size="small"
-                    show-total
-                  ></Page>
-                </Form-item>
-              </Form>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -373,25 +275,6 @@ export default {
                   '详情'
                 )
               ]
-              if (params.row.orderStatus === 0) {
-                arr.push(
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'error',
-                        size: 'small'
-                      },
-                      on: {
-                        click: () => {
-                          this.showRefuse(params.row)
-                        }
-                      }
-                    },
-                    '取消'
-                  )
-                )
-              }
               if (params.row.orderStatus === 1) {
                 arr.push(
                   h(
@@ -407,7 +290,7 @@ export default {
                         }
                       }
                     },
-                    '派遣员工'
+                    '派遣'
                   ),
                   h(
                     'Button',
@@ -431,42 +314,6 @@ export default {
                     'Button',
                     {
                       props: {
-                        type: 'primary',
-                        size: 'small'
-                      },
-                      on: {
-                        click: () => {
-                          this.showTogo(params.row)
-                        }
-                      }
-                    },
-                    '上门'
-                  )
-                )
-              } else if (params.row.orderStatus === 3) {
-                arr.push(
-                  h(
-                    'Button',
-                    {
-                      props: {
-                        type: 'warning',
-                        size: 'small'
-                      },
-                      on: {
-                        click: () => {
-                          this.showArrive(params.row)
-                        }
-                      }
-                    },
-                    '到达'
-                  )
-                )
-              } else if (params.row.orderStatus === 4) {
-                arr.push(
-                  h(
-                    'Button',
-                    {
-                      props: {
                         type: 'success',
                         size: 'small'
                       },
@@ -477,67 +324,24 @@ export default {
                       }
                     },
                     '完成'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'warning',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showRefuse(params.row)
+                        }
+                      }
+                    },
+                    '取消'
                   )
                 )
               }
-              return h('div', arr)
-            }
-          }
-        ],
-        columns1: [
-          {
-            title: '员工编号',
-            align: 'center',
-            key: 'id'
-          },
-          {
-            title: '姓名',
-            align: 'center',
-            key: 'name'
-          },
-          {
-            title: '账号(电话)',
-            align: 'center',
-            key: 'account'
-          },
-          {
-            title: '身份',
-            align: 'center',
-            key: 'roleChina'
-          },
-          {
-            title: '派单模式',
-            align: 'center',
-            key: 'orderModelChina'
-          },
-          {
-            title: '空闲状态',
-            align: 'center',
-            key: 'freeStatus'
-          },
-          {
-            title: '操作',
-            key: 'action',
-            width: 200,
-            align: 'center',
-            render: (h, params) => {
-              const arr = [
-                h(
-                  'Button',
-                  {
-                    props: {
-                      type: 'success',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.showDispatch1(params.row)
-                      }
-                    }
-                  },
-                  '确认派遣'
-                )
-              ]
               return h('div', arr)
             }
           }
@@ -555,18 +359,6 @@ export default {
           size: 5,
           role: 4
         },
-        pageData1: {
-          content: [],
-          pageNum: 1,
-          numberOfElements: 0,
-          total: 0,
-          totalPages: 0
-        },
-        searchCondition1: {
-          page: 1,
-          size: 5,
-          isFree: 1
-        },
         pageSizeOpts: [1, 5, 10, 20, 30, 40]
       },
       viewData: {
@@ -574,15 +366,11 @@ export default {
         Detail: '',
         Delete: {},
         Confirm: {},
-        Dispatch: {},
         modalDelete: false,
         modalDetail: false,
         modalDispatch: false,
-        modalDispatch1: false,
         modalRefuse: false,
         modalPass: false,
-        modalTogo: false,
-        modalArrive: false,
         statusList: [
           {
             value: 0,
@@ -590,26 +378,14 @@ export default {
           },
           {
             value: 1,
-            label: '待接单'
+            label: '待派遣'
           },
           {
             value: 2,
-            label: '待上门'
-          },
-          {
-            value: 3,
-            label: '待到达'
-          },
-          {
-            value: 4,
             label: '待完成'
           },
           {
-            value: 5,
-            label: '待用户评价'
-          },
-          {
-            value: 6,
+            value: 3,
             label: '已完成'
           },
           {
@@ -619,44 +395,6 @@ export default {
           {
             value: -2,
             label: '退款中'
-          }
-        ],
-        roleList: [
-          {
-            value: 0,
-            label: '未注册'
-          },
-          {
-            value: 1,
-            label: '公司员工'
-          },
-          {
-            value: 2,
-            label: '合伙人'
-          }
-        ],
-        statusList1: [
-          {
-            value: 0,
-            label: '工作中'
-          },
-          {
-            value: 1,
-            label: '空闲中'
-          }
-        ],
-        pdList: [
-          {
-            value: 1,
-            label: '接收派单'
-          },
-          {
-            value: 2,
-            label: '直接受强制派单'
-          },
-          {
-            value: 3,
-            label: '不接受派单'
           }
         ]
       }
@@ -681,7 +419,7 @@ export default {
             id: this.viewData.Delete.id
           }
         })
-        .then((res) => {
+        .then(res => {
           this.$Message.success('删除成功!')
           this.searchManage()
         })
@@ -698,35 +436,7 @@ export default {
             id: this.viewData.Confirm.id
           })
         )
-        .then((response) => {
-          this.viewData.Confirm = {}
-          this.$Message.success('操作成功!')
-          this.searchManage()
-        })
-    },
-    onTogo (status) {
-      axios
-        .put(
-          '/qsz_pf/order/to_go',
-          qs.stringify({
-            id: this.viewData.Confirm.id
-          })
-        )
-        .then((response) => {
-          this.viewData.Confirm = {}
-          this.$Message.success('操作成功!')
-          this.searchManage()
-        })
-    },
-    onArrive (status) {
-      axios
-        .put(
-          '/qsz_pf/order/arrive',
-          qs.stringify({
-            id: this.viewData.Confirm.id
-          })
-        )
-        .then((response) => {
+        .then(response => {
           this.viewData.Confirm = {}
           this.$Message.success('操作成功!')
           this.searchManage()
@@ -737,11 +447,10 @@ export default {
         .put(
           '/qsz_pf/order/done',
           qs.stringify({
-            id: this.viewData.Confirm.id,
-            recycleGoods: ''
+            id: this.viewData.Confirm.id
           })
         )
-        .then((response) => {
+        .then(response => {
           this.viewData.Confirm = {}
           this.$Message.success('操作成功!')
           this.searchManage()
@@ -749,17 +458,14 @@ export default {
     },
     onDispatch (status) {
       axios
-        .post(
-          '/qsz_pf/order/distribute',
+        .put(
+          '/qsz_pf/order/dispatch',
           qs.stringify({
-            id: this.viewData.Dispatch.id,
-            employeeId: this.viewData.Confirm.id
+            id: this.viewData.Confirm.id
           })
         )
-        .then((response) => {
-          this.viewData.modalDispatch = false
+        .then(response => {
           this.viewData.Confirm = {}
-          this.viewData.Dispatch = {}
           this.$Message.success('操作成功!')
           this.searchManage()
         })
@@ -777,23 +483,9 @@ export default {
       this.viewData.Confirm = item
       this.viewData.modalPass = true
     },
-    showTogo (item) {
-      this.viewData.Confirm = item
-      this.viewData.modalTogo = true
-    },
-    showArrive (item) {
-      this.viewData.Confirm = item
-      this.viewData.modalArrive = true
-    },
     showDispatch (item) {
-      this.viewData.Dispatch = item
-      this.searchManage1()
-      this.viewData.modalDispatch = true
-    },
-    showDispatch1 (item) {
       this.viewData.Confirm = item
-      this.searchManage1()
-      this.viewData.modalDispatch1 = true
+      this.viewData.modalDispatch = true
     },
     showRefuse (item) {
       this.viewData.Confirm = item
@@ -808,11 +500,6 @@ export default {
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
-    searchPageReturn1 () {
-      this.searchList.searchCondition1.page = 1
-      this.searchManage1()
-      this.$Message.success('搜索完成!')
-    },
     searchManage () {
       axios
         .get('/qsz_pf/order/list', {
@@ -825,28 +512,9 @@ export default {
             orderStatus: this.searchList.searchCondition.orderStatus
           }
         })
-        .then((res) => {
+        .then(res => {
           this.searchList.pageData.content = res.data.data
           this.searchList.pageData.total = res.data.total
-        })
-    },
-    searchManage1 () {
-      axios
-        .get('/qsz_pf/employee/work_list', {
-          params: {
-            page: this.searchList.searchCondition1.page,
-            name: this.searchList.searchCondition1.name,
-            orderModel: this.searchList.searchCondition1.orderModel,
-            isFree: this.searchList.searchCondition1.isFree,
-            role: this.searchList.searchCondition1.role
-          }
-        })
-        .then((res) => {
-          this.searchList.pageData1.content = res.data.data
-          if (res.data.data.length === 0) {
-            this.$Message.error('没有更多数据了')
-          }
-          this.searchList.pageData1.total = res.data.total
         })
     },
     searchDetail () {
@@ -856,7 +524,7 @@ export default {
             id: this.viewData.id
           }
         })
-        .then((res) => {
+        .then(res => {
           this.viewData.Detail = res.data
         })
     }

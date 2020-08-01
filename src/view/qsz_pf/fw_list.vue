@@ -5,6 +5,9 @@
         <Form-item>
           <Form inline>
             <Form-item>
+              <Button style="margin-right:10px" @click="searchPageReturn">
+                <Icon size="20" type="ios-search" />
+              </Button>
               <Button icon="md-add" @click="showAdd()">增加</Button>
             </Form-item>
             <Modal
@@ -14,26 +17,44 @@
               @on-ok="onDeleteBtn"
             >
               确认删除
-              <span style="color:red">{{viewData.Delete.kName}}</span>
-              关键词吗？
-              <p>(*删除后将会把关键词下的所有需求隐藏！)</p>
+              <span style="color:red">{{viewData.Delete.serviceName}}</span>
+              服务项目吗？
+              <!-- <p>(*删除后将会把服务项目下的所有需求隐藏！)</p> -->
             </Modal>
             <Modal
               v-model="viewData.modalAdd"
-              title="添加关键词"
+              title="添加服务项目"
               :mask-closable="false"
               @on-ok="onAddBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="服务项目名:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Add.kName"
+                    v-model="viewData.Add.serviceName"
                     type="text"
-                    :maxlength="20"
-                    placeholder="关键词名"
+                    :maxlength="30"
+                    placeholder="服务项目名"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务单位:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.unit"
+                    type="text"
+                    :maxlength="10"
+                    placeholder="服务单位"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务价格:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.servicePrice"
+                    type="text"
+                    :maxlength="10"
+                    placeholder="服务价格"
                   ></Input>
                 </Form-item>
                 <Form-item class="form_item" label="排序序号:">
@@ -41,7 +62,7 @@
                     style="width: 200px"
                     v-model="viewData.Add.listOrder"
                     type="text"
-                    :maxlength="20"
+                    :maxlength="4"
                     placeholder="排序序号"
                   ></Input>
                 </Form-item>
@@ -50,19 +71,38 @@
             <Modal
               clearable
               v-model="viewData.modalEdit"
-              title="编辑关键词"
+              title="编辑服务项目"
               :mask-closable="false"
               @on-ok="onEditBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="服务项目名:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Edit.kName"
+                    v-model="viewData.Edit.serviceName"
                     type="text"
-                    placeholder="关键词"
+                    :maxlength="30"
+                    placeholder="服务项目"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务单位:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.unit"
+                    type="text"
+                    :maxlength="10"
+                    placeholder="服务单位"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务价格:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.servicePrice"
+                    type="text"
+                    :maxlength="10"
+                    placeholder="服务价格"
                   ></Input>
                 </Form-item>
                 <Form-item class="form_item" label="排序序号:">
@@ -70,7 +110,7 @@
                     style="width: 200px"
                     v-model="viewData.Edit.listOrder"
                     type="text"
-                    :maxlength="20"
+                    :maxlength="4"
                     placeholder="排序序号"
                   ></Input>
                 </Form-item>
@@ -105,14 +145,27 @@ export default {
         Info: [],
         columns: [
           {
-            title: '关键词Id',
+            title: '服务项目Id',
             align: 'center',
             key: 'id'
           },
           {
-            title: '关键词名',
+            title: '服务项目名',
             align: 'center',
-            key: 'kName'
+            key: 'serviceName'
+          },
+          {
+            title: '单位',
+            align: 'center',
+            key: 'unit'
+          },
+          {
+            title: '服务价格',
+            align: 'center',
+            key: 'servicePrice',
+            render: (h, params) => {
+              return h('span', params.row.servicePrice + '元')
+            }
           },
           {
             title: '排序序号',
@@ -133,10 +186,10 @@ export default {
                 },
                 slot: {},
                 on: {
-                  'on-change': e => {
+                  'on-change': (e) => {
                     axios
                       .put(
-                        '/sjwh/qsh_keyword/update_status',
+                        '/qsz_pf/item/update_status',
                         qs.stringify({
                           id: params.row.id,
                           status: e
@@ -218,11 +271,11 @@ export default {
       },
       viewData: {
         Add: {
-          kName: '',
+          serviceName: '',
           listOrder: ''
         },
         Edit: {
-          kName: '',
+          serviceName: '',
           listOrder: ''
         },
         ImgSrc: '',
@@ -241,53 +294,57 @@ export default {
     },
     onDeleteBtn () {
       axios
-        .delete('/sjwh/qsh_keyword/delete', {
+        .delete('/qsz_pf/item/delete', {
           data: {
             id: this.viewData.Delete.id
           }
         })
-        .then(response => {
+        .then((response) => {
           this.$Message.success('删除成功!')
           this.searchManage()
           this.searchPid()
         })
     },
     onAddBtn () {
-      if (this.viewData.Add.kName === '') {
-        this.$Message.error('请输入关键词名')
+      if (this.viewData.Add.serviceName === '') {
+        this.$Message.error('请输入服务项目名')
         return
       }
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
-          '/sjwh/qsh_keyword/create',
+          '/qsz_pf/item/create',
           qs.stringify({
-            kName: this.viewData.Add.kName,
+            serviceName: this.viewData.Add.serviceName,
+            servicePrice: this.viewData.Add.servicePrice,
+            unit: this.viewData.Add.unit,
             listOrder: this.viewData.Add.listOrder
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Add = {}
           this.searchManage()
           this.$Message.success('添加成功!')
         })
     },
     onEditBtn () {
-      if (this.viewData.Edit.kName === '') {
-        this.$Message.error('请输入关键词名')
+      if (this.viewData.Edit.serviceName === '') {
+        this.$Message.error('请输入服务项目名')
         return
       }
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
-          '/sjwh/qsh_keyword/update',
+          '/qsz_pf/item/update',
           qs.stringify({
             id: this.viewData.Edit.id,
-            kName: this.viewData.Edit.kName,
+            serviceName: this.viewData.Edit.serviceName,
+            servicePrice: this.viewData.Edit.servicePrice,
+            unit: this.viewData.Edit.unit,
             listOrder: this.viewData.Edit.listOrder
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Edit = {}
           this.searchManage()
           this.$Message.success('编辑成功!')
@@ -319,12 +376,14 @@ export default {
     },
     searchManage () {
       axios
-        .get('/sjwh/qsh_keyword/list', {
-          params: {}
+        .get('/qsz_pf/item/list', {
+          params: {
+            page: this.searchList.searchCondition.page
+          }
         })
-        .then(response => {
-          this.searchList.pageData.content = response.data
-          // this.searchList.pageData.total = response.data.total
+        .then((response) => {
+          this.searchList.pageData.content = response.data.data
+          this.searchList.pageData.total = response.data.total
         })
     }
   },

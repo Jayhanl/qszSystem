@@ -5,6 +5,9 @@
         <Form-item>
           <Form inline>
             <Form-item>
+              <Button style="margin-right:10px" @click="searchPageReturn">
+                <Icon size="20" type="ios-search" />
+              </Button>
               <Button icon="md-add" @click="showAdd()">增加</Button>
             </Form-item>
             <Modal
@@ -14,35 +17,35 @@
               @on-ok="onDeleteBtn"
             >
               确认删除
-              <span style="color:red">{{viewData.Delete.kName}}</span>
-              关键词吗？
-              <p>(*删除后将会把关键词下的所有需求隐藏！)</p>
+              <span style="color:red">{{viewData.Delete.name}}</span>
+              旧物类型吗？
+              <!-- <p>(*删除后将会把旧物类型下的所有需求隐藏！)</p> -->
             </Modal>
             <Modal
               v-model="viewData.modalAdd"
-              title="添加关键词"
+              title="添加旧物类型"
               :mask-closable="false"
               @on-ok="onAddBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="旧物类型名:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Add.kName"
+                    v-model="viewData.Add.name"
                     type="text"
                     :maxlength="20"
-                    placeholder="关键词名"
+                    placeholder="回收旧物类型名称"
                   ></Input>
                 </Form-item>
-                <Form-item class="form_item" label="排序序号:">
+                <Form-item class="form_item" label="获得积分:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Add.listOrder"
+                    v-model="viewData.Add.integral"
                     type="text"
-                    :maxlength="20"
-                    placeholder="排序序号"
+                    :maxlength="10"
+                    placeholder="获得积分"
                   ></Input>
                 </Form-item>
               </Form>
@@ -50,28 +53,28 @@
             <Modal
               clearable
               v-model="viewData.modalEdit"
-              title="编辑关键词"
+              title="编辑旧物类型"
               :mask-closable="false"
               @on-ok="onEditBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="旧物类型名:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Edit.kName"
+                    v-model="viewData.Edit.name"
                     type="text"
-                    placeholder="关键词"
+                    placeholder="回收旧物类型名称"
                   ></Input>
                 </Form-item>
-                <Form-item class="form_item" label="排序序号:">
+                <Form-item class="form_item" label="获得积分:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Edit.listOrder"
+                    v-model="viewData.Edit.integral"
                     type="text"
-                    :maxlength="20"
-                    placeholder="排序序号"
+                    :maxlength="10"
+                    placeholder="获得积分"
                   ></Input>
                 </Form-item>
               </Form>
@@ -105,19 +108,19 @@ export default {
         Info: [],
         columns: [
           {
-            title: '关键词Id',
+            title: '旧物类型Id',
             align: 'center',
             key: 'id'
           },
           {
-            title: '关键词名',
+            title: '旧物类型名',
             align: 'center',
-            key: 'kName'
+            key: 'name'
           },
           {
-            title: '排序序号',
+            title: '获得积分',
             align: 'center',
-            key: 'listOrder'
+            key: 'integral'
           },
           {
             title: '是否上架',
@@ -133,10 +136,10 @@ export default {
                 },
                 slot: {},
                 on: {
-                  'on-change': e => {
+                  'on-change': (e) => {
                     axios
                       .put(
-                        '/sjwh/qsh_keyword/update_status',
+                        '/qsz_pf/rec_goods/update_status',
                         qs.stringify({
                           id: params.row.id,
                           status: e
@@ -218,12 +221,12 @@ export default {
       },
       viewData: {
         Add: {
-          kName: '',
-          listOrder: ''
+          name: '',
+          integral: ''
         },
         Edit: {
-          kName: '',
-          listOrder: ''
+          name: '',
+          integral: ''
         },
         ImgSrc: '',
         pList: [],
@@ -241,53 +244,53 @@ export default {
     },
     onDeleteBtn () {
       axios
-        .delete('/sjwh/qsh_keyword/delete', {
+        .delete('/qsz_pf/rec_goods/delete', {
           data: {
             id: this.viewData.Delete.id
           }
         })
-        .then(response => {
+        .then((response) => {
           this.$Message.success('删除成功!')
           this.searchManage()
           this.searchPid()
         })
     },
     onAddBtn () {
-      if (this.viewData.Add.kName === '') {
-        this.$Message.error('请输入关键词名')
+      if (this.viewData.Add.name === '') {
+        this.$Message.error('请输入旧物类型名')
         return
       }
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
-          '/sjwh/qsh_keyword/create',
+          '/qsz_pf/rec_goods/create',
           qs.stringify({
-            kName: this.viewData.Add.kName,
-            listOrder: this.viewData.Add.listOrder
+            name: this.viewData.Add.name,
+            integral: this.viewData.Add.integral
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Add = {}
           this.searchManage()
           this.$Message.success('添加成功!')
         })
     },
     onEditBtn () {
-      if (this.viewData.Edit.kName === '') {
-        this.$Message.error('请输入关键词名')
+      if (this.viewData.Edit.name === '') {
+        this.$Message.error('请输入旧物类型名')
         return
       }
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
-          '/sjwh/qsh_keyword/update',
+          '/qsz_pf/rec_goods/update',
           qs.stringify({
             id: this.viewData.Edit.id,
-            kName: this.viewData.Edit.kName,
-            listOrder: this.viewData.Edit.listOrder
+            name: this.viewData.Edit.name,
+            integral: this.viewData.Edit.integral
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Edit = {}
           this.searchManage()
           this.$Message.success('编辑成功!')
@@ -319,12 +322,14 @@ export default {
     },
     searchManage () {
       axios
-        .get('/sjwh/qsh_keyword/list', {
-          params: {}
+        .get('/qsz_pf/rec_goods/list', {
+          params: {
+            page: this.searchList.searchCondition.page
+          }
         })
-        .then(response => {
-          this.searchList.pageData.content = response.data
-          // this.searchList.pageData.total = response.data.total
+        .then((response) => {
+          this.searchList.pageData.content = response.data.data
+          this.searchList.pageData.total = response.data.total
         })
     }
   },

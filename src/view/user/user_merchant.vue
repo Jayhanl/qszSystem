@@ -149,7 +149,7 @@
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
-              :current="searchList.pageData.pageNum"
+              :current="searchList.searchCondition.page"
               :page-size="10"
               @on-change="onPageChange"
               size="small"
@@ -166,7 +166,7 @@ import axios from 'axios'
 import qs from 'qs'
 
 export default {
-  data() {
+  data () {
     return {
       formDynamic: {
         index: 1,
@@ -339,18 +339,18 @@ export default {
     }
   },
   methods: {
-    showImg(ad_picture_url) {
+    showImg (ad_picture_url) {
       this.$Modal.info({
         title: '预览图片',
         closable: true,
         content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
       })
     },
-    onPageChange(pageNum) {
+    onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
-    onDeleteBtn() {
+    onDeleteBtn () {
       axios
         .delete('/api/merchant/delete', {
           data: {
@@ -362,7 +362,7 @@ export default {
           this.searchManage()
         })
     },
-    onAuditBtn(status) {
+    onAuditBtn (status) {
       axios
         .put(
           '/api/user/merchant_audit',
@@ -378,33 +378,33 @@ export default {
           this.searchManage()
         })
     },
-    onModelCancel() {
+    onModelCancel () {
       this.searchManage()
     },
-    showDetail(row) {
+    showDetail (row) {
       this.viewData.modalDetail = true
       this.viewData.Detail = row
       this.viewData.registerId = row.registerId
       this.searchDetail()
     },
-    showPass(item) {
+    showPass (item) {
       this.viewData.Confirm = item
       this.viewData.modalPass = true
     },
-    showRefuse(item) {
+    showRefuse (item) {
       this.viewData.Confirm = item
       this.viewData.modalRefuse = true
     },
-    showDelete(item) {
+    showDelete (item) {
       this.viewData.Delete = item
       this.viewData.modalDelete = true
     },
-    searchPageReturn() {
+    searchPageReturn () {
       this.searchList.searchCondition.page = 1
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
-    searchManage() {
+    searchManage () {
       axios
         .get('/api/user/merchant_list', {
           params: {
@@ -419,7 +419,7 @@ export default {
           this.searchList.pageData.total = res.data.total
         })
     },
-    searchDetail() {
+    searchDetail () {
       axios
         .get('/api/user/merchant_detail', {
           params: {
@@ -431,7 +431,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.searchManage()
   }
 }

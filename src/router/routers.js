@@ -82,7 +82,64 @@ export default [{
   },
   component: Main,
   children: [{
-    path: 'qsz_pf_order_list',
+    path: '/qsz_em',
+    name: '师傅端',
+    meta: {
+      icon: 'ios-man',
+      title: '师傅端'
+    },
+    component: parentView,
+    children: [{
+      path: 'jw_list',
+      name: 'qsz_pf_jw_list',
+      meta: {
+        icon: 'md-cube',
+        title: '旧物回收列表'
+      },
+      component: () => import('@/view/qsz_pf/jw_list.vue')
+    }, {
+      path: 'msg_list',
+      name: 'qsz_pf_msg_list',
+      meta: {
+        icon: 'md-megaphone',
+        title: '信息列表'
+      },
+      component: () => import('@/view/qsz_pf/msg_list.vue')
+    }, {
+      path: 'em_list',
+      name: 'qsz_pf_em_list',
+      meta: {
+        icon: 'md-person',
+        title: '员工列表'
+      },
+      component: () => import('@/view/qsz_pf/employee_list.vue')
+    }, {
+      path: 'tx_list',
+      name: 'qsz_pf_tx_list',
+      meta: {
+        icon: 'logo-yen',
+        title: '提现列表'
+      },
+      component: () => import('@/view/qsz_pf/withdrawal_list.vue')
+    }]
+  }, {
+    path: 'sq_list',
+    name: 'qsz_pf_sq_list',
+    meta: {
+      icon: 'ios-list',
+      title: '社区列表'
+    },
+    component: () => import('@/view/qsz_pf/sq_list.vue')
+  }, {
+    path: 'fw_list',
+    name: 'qsz_pf_fw_list',
+    meta: {
+      icon: 'md-pricetag',
+      title: '服务项目'
+    },
+    component: () => import('@/view/qsz_pf/fw_list.vue')
+  }, {
+    path: 'order_list',
     name: 'qsz_pf_order_list',
     meta: {
       icon: 'md-list-box',
@@ -90,13 +147,29 @@ export default [{
     },
     component: () => import('@/view/qsz_pf/order_list.vue')
   }, {
-    path: 'qsz_pf_user_list',
+    path: 'user_list',
     name: 'qsz_pf_user_list',
     meta: {
       icon: 'md-contacts',
       title: '用户管理'
     },
     component: () => import('@/view/qsz_pf/user_list.vue')
+  }, {
+    path: 'sign_list',
+    name: 'qsz_pf_sign_list',
+    meta: {
+      icon: 'md-log-in',
+      title: '用户签到'
+    },
+    component: () => import('@/view/qsz_pf/sign_list.vue')
+  }, {
+    path: 'setting_list',
+    name: 'qsz_pf_setting_list',
+    meta: {
+      icon: 'md-settings',
+      title: '系统设置'
+    },
+    component: () => import('@/view/qsz_pf/setting_list.vue')
   }]
 },
 {
@@ -107,57 +180,56 @@ export default [{
     title: '市井服务信息平台'
   },
   component: Main,
-  children: [
-    {
-      path: '/qssh',
-      name: '轻松生活',
+  children: [{
+    path: '/qssh',
+    name: '轻松生活',
+    meta: {
+      icon: 'md-beer',
+      title: '轻松生活'
+    },
+    component: parentView,
+    children: [{
+      path: 'qssh_sq_list',
+      name: 'qssh_sq_list',
       meta: {
-        icon: 'md-beer',
-        title: '轻松生活'
+        icon: 'ios-list',
+        title: '社区列表'
       },
-      component: parentView,
-      children: [{
-        path: 'qssh_sq_list',
-        name: '社区列表',
-        meta: {
-          icon: 'ios-list',
-          title: '社区列表'
-        },
-        component: () => import('@/view/qssh/sq_list.vue')
-      }, {
-        path: 'qssh_kw_list',
-        name: '关键词列表',
-        meta: {
-          icon: 'ios-list',
-          title: '关键词列表'
-        },
-        component: () => import('@/view/qssh/kw_list.vue')
-      }, {
-        path: 'qssh_order_list',
-        name: '需求列表',
-        meta: {
-          icon: 'md-list-box',
-          title: '需求列表'
-        },
-        component: () => import('@/view/qssh/order_list.vue')
-      }]
+      component: () => import('@/view/qssh/sq_list.vue')
     }, {
-      path: 'platform_order_list',
-      name: 'platform_order_list',
+      path: 'qssh_kw_list',
+      name: 'qssh_kw_list',
+      meta: {
+        icon: 'ios-list',
+        title: '关键词列表'
+      },
+      component: () => import('@/view/qssh/kw_list.vue')
+    }, {
+      path: 'qssh_order_list',
+      name: 'qssh_order_list',
       meta: {
         icon: 'md-list-box',
-        title: '订单列表'
+        title: '需求列表'
       },
-      component: () => import('@/view/platform/order_list.vue')
-    }, {
-      path: 'platform_user_list',
-      name: 'platform_user_list',
-      meta: {
-        icon: 'md-contacts',
-        title: '用户管理'
-      },
-      component: () => import('@/view/platform/user_list.vue')
+      component: () => import('@/view/qssh/order_list.vue')
     }]
+  }, {
+    path: 'platform_order_list',
+    name: 'platform_order_list',
+    meta: {
+      icon: 'md-list-box',
+      title: '订单列表'
+    },
+    component: () => import('@/view/platform/order_list.vue')
+  }, {
+    path: 'platform_user_list',
+    name: 'platform_user_list',
+    meta: {
+      icon: 'md-contacts',
+      title: '用户管理'
+    },
+    component: () => import('@/view/platform/user_list.vue')
+  }]
 },
 {
   path: '/admin',

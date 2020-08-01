@@ -96,7 +96,7 @@
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
-              :current="searchList.pageData.pageNum"
+              :current="searchList.searchCondition.page"
               :page-size="10"
               @on-change="onPageChange"
               size="small"

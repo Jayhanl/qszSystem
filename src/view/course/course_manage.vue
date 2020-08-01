@@ -243,7 +243,7 @@
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
-              :current="searchList.pageData.pageNum"
+              :current="searchList.searchCondition.page"
               :page-size="10"
               @on-change="onPageChange"
               size="small"
@@ -260,7 +260,7 @@ import axios from 'axios'
 import qs from 'qs'
 
 export default {
-  data() {
+  data () {
     return {
       searchList: {
         carList: [],
@@ -492,27 +492,27 @@ export default {
     }
   },
   methods: {
-    showImg(ad_picture_url) {
+    showImg (ad_picture_url) {
       this.$Modal.info({
         title: '预览图片',
         closable: true,
         content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
       })
     },
-    changeImage(e) {
-      let file = e.target.files[0]
-      let reader = new FileReader()
-      let that = this
+    changeImage (e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      const that = this
       reader.readAsDataURL(file)
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         that.viewData.ImgSrc = this.result
       }
     },
-    onPageChange(pageNum) {
+    onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
-    onDeleteBtn() {
+    onDeleteBtn () {
       axios
         .delete('/api/course/delete', {
           data: {
@@ -524,7 +524,7 @@ export default {
           this.searchManage()
         })
     },
-    onChangeStatus(status, row, type) {
+    onChangeStatus (status, row, type) {
       axios
         .put(
           '/api/course/update_status',
@@ -546,7 +546,7 @@ export default {
           this.searchManage()
         })
     },
-    onAuditBtn(status) {
+    onAuditBtn (status) {
       axios
         .put(
           '/api/course/audit',
@@ -562,39 +562,39 @@ export default {
           this.searchManage()
         })
     },
-    onModelCancel() {
+    onModelCancel () {
       this.viewData.Img = []
       this.$refs.avatarInput.value = ''
       this.searchManage()
     },
-    showDetail(row) {
+    showDetail (row) {
       this.viewData.modalDetail = true
       this.viewData.Detail = row
       this.viewData.courseId = row.courseId
     },
-    showPass(item) {
+    showPass (item) {
       this.viewData.Confirm = item
       this.viewData.modalPass = true
     },
-    showRefuse(item) {
+    showRefuse (item) {
       this.viewData.Confirm = item
       this.viewData.modalRefuse = true
     },
-    showDelete(item) {
+    showDelete (item) {
       this.viewData.Delete = item
       this.viewData.modalDelete = true
     },
-    showEdit(item) {
+    showEdit (item) {
       this.viewData.ImgSrc = item.imageSrc
       this.viewData.Edit = item
       this.viewData.modalEdit = true
     },
-    showAdd() {
+    showAdd () {
       this.viewData.ImgSrc = ''
       this.$refs.avatarInput.value = ''
       this.viewData.modalAdd = true
     },
-    onAddBtn() {
+    onAddBtn () {
       if (this.viewData.ImgSrc === '') {
         this.$Message.error('请上传课程封面图')
         return
@@ -621,7 +621,7 @@ export default {
           this.$Message.success('添加成功!')
         })
     },
-    onEditBtn() {
+    onEditBtn () {
       if (this.viewData.ImgSrc === '') {
         this.$Message.error('请上传课程封面图')
         return
@@ -650,12 +650,12 @@ export default {
           this.$Message.success('编辑成功!')
         })
     },
-    searchPageReturn() {
+    searchPageReturn () {
       this.searchList.searchCondition.page = 1
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
-    searchManage() {
+    searchManage () {
       axios
         .get('/api/course/get', {
           params: {
@@ -669,9 +669,9 @@ export default {
           this.searchList.pageData.content = response.data.data
           this.searchList.pageData.total = response.data.total
         })
-    },
+    }
   },
-  created() {
+  created () {
     axios.get('/api/course_cate/get').then(response => {
       this.searchList.cateList = response.data
     })

@@ -1,10 +1,22 @@
 <template>
   <Row :gutter="32">
-    <Col span="32">
+    <Col span="24">
       <Form>
         <Form-item>
           <Form inline>
             <Form-item>
+              <Input
+                class="search_item"
+                type="text"
+                v-model="searchList.searchCondition.msgTitle"
+                clearable
+                placeholder="信息标题"
+              ></Input>
+            </Form-item>
+            <Form-item>
+              <Button style="margin-right:10px" @click="searchPageReturn">
+                <Icon size="18" type="ios-search" />
+              </Button>
               <Button icon="md-add" @click="showAdd()">增加</Button>
             </Form-item>
             <Modal
@@ -13,65 +25,62 @@
               v-model="viewData.modalDelete"
               @on-ok="onDeleteBtn"
             >
-              确认删除
-              <span style="color:red">{{viewData.Delete.kName}}</span>
-              关键词吗？
-              <p>(*删除后将会把关键词下的所有需求隐藏！)</p>
+              确认删除id为：
+              <span style="color:red">{{viewData.Delete.msgId}}</span>
+              的信息吗？
             </Modal>
             <Modal
               v-model="viewData.modalAdd"
-              title="添加关键词"
+              title="添加信息"
               :mask-closable="false"
               @on-ok="onAddBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="信息标题:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Add.kName"
+                    v-model="viewData.Add.msgTitle"
                     type="text"
-                    :maxlength="20"
-                    placeholder="关键词名"
+                    placeholder="请输入标题"
                   ></Input>
                 </Form-item>
-                <Form-item class="form_item" label="排序序号:">
+                <Form-item class="form_item" label="信息正文:">
                   <Input
-                    style="width: 200px"
-                    v-model="viewData.Add.listOrder"
-                    type="text"
-                    :maxlength="20"
-                    placeholder="排序序号"
+                    style="width: 400px"
+                    v-model="viewData.Add.msgContent"
+                    :autosize="{minRows: 5,maxRows: 20}"
+                    type="textarea"
+                    placeholder="请输入信息正文..."
                   ></Input>
                 </Form-item>
               </Form>
             </Modal>
             <Modal
-              clearable
               v-model="viewData.modalEdit"
-              title="编辑关键词"
+              title="编辑信息"
               :mask-closable="false"
               @on-ok="onEditBtn"
               width="35"
               @on-cancel="onModelCancel"
             >
               <Form :label-width="80">
-                <Form-item class="form_item" label="关键词名:">
+                <Form-item class="form_item" label="信息标题:">
                   <Input
                     style="width: 200px"
-                    v-model="viewData.Edit.kName"
+                    v-model="viewData.Edit.msgTitle"
                     type="text"
-                    placeholder="关键词"
+                    placeholder="请输入正整数"
                   ></Input>
                 </Form-item>
-                <Form-item class="form_item" label="排序序号:">
+                <Form-item class="form_item" label="信息正文:">
                   <Input
-                    style="width: 200px"
-                    v-model="viewData.Edit.listOrder"
-                    type="text"
-                    :maxlength="20"
-                    placeholder="排序序号"
+                    style="width: 400px"
+                    v-model="viewData.Edit.msgContent"
+                    :autosize="{minRows: 5,maxRows: 20}"
+                    type="textarea"
+                    placeholder="请输入信息正文..."
                   ></Input>
                 </Form-item>
               </Form>
@@ -101,57 +110,31 @@ import qs from 'qs'
 export default {
   data () {
     return {
+      fileName: '',
+      uploadFile: {},
       searchList: {
         Info: [],
         columns: [
           {
-            title: '关键词Id',
+            title: 'id',
             align: 'center',
-            key: 'id'
+            key: 'msgId',
+            width: 120
           },
           {
-            title: '关键词名',
+            title: '信息标题',
             align: 'center',
-            key: 'kName'
+            key: 'msgTitle'
           },
           {
-            title: '排序序号',
+            title: '信息内容',
             align: 'center',
-            key: 'listOrder'
+            key: 'msgContent'
           },
           {
-            title: '是否上架',
+            title: '发送时间',
             align: 'center',
-            key: 'action',
-            render: (h, params) => {
-              return h('i-switch', {
-                props: {
-                  value: params.row.status,
-                  'false-value': 0,
-                  'true-value': 1,
-                  size: 'large'
-                },
-                slot: {},
-                on: {
-                  'on-change': e => {
-                    axios
-                      .put(
-                        '/sjwh/qsh_keyword/update_status',
-                        qs.stringify({
-                          id: params.row.id,
-                          status: e
-                        })
-                      )
-                      .then(() => {
-                        this.$Message.success('操作成功!')
-                      })
-                      .catch(() => {
-                        this.searchManage()
-                      })
-                  }
-                }
-              })
-            }
+            key: 'createTime'
           },
           {
             title: '操作',
@@ -204,11 +187,7 @@ export default {
         pageData: {
           content: [],
           pageNum: 1,
-          numberOfElements: 0,
-          total: 0,
-          totalPages: 0,
-          size: 5,
-          rankTime: ''
+          total: 0
         },
         searchCondition: {
           page: 1,
@@ -218,52 +197,42 @@ export default {
       },
       viewData: {
         Add: {
-          kName: '',
-          listOrder: ''
+          categoryName: '',
+          listorder: ''
         },
         Edit: {
-          kName: '',
-          listOrder: ''
+          categoryName: '',
+          listorder: ''
         },
-        ImgSrc: '',
-        pList: [],
+        Delete: {},
         modalEdit: false,
         modalAdd: false,
         modalDelete: false,
-        Delete: ''
+        Confirm: ''
       }
     }
   },
   methods: {
-    onPageChange (pageNum) {
-      this.searchList.searchCondition.page = pageNum
-      this.searchManage()
-    },
     onDeleteBtn () {
       axios
-        .delete('/sjwh/qsh_keyword/delete', {
+        .delete('/qsz_pf/message/delete', {
           data: {
-            id: this.viewData.Delete.id
+            msgId: this.viewData.Delete.msgId
           }
         })
         .then(response => {
           this.$Message.success('删除成功!')
           this.searchManage()
-          this.searchPid()
         })
     },
     onAddBtn () {
-      if (this.viewData.Add.kName === '') {
-        this.$Message.error('请输入关键词名')
-        return
-      }
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
-          '/sjwh/qsh_keyword/create',
+          '/qsz_pf/message/create',
           qs.stringify({
-            kName: this.viewData.Add.kName,
-            listOrder: this.viewData.Add.listOrder
+            msgContent: this.viewData.Add.msgContent,
+            msgTitle: this.viewData.Add.msgTitle
           })
         )
         .then(response => {
@@ -273,18 +242,14 @@ export default {
         })
     },
     onEditBtn () {
-      if (this.viewData.Edit.kName === '') {
-        this.$Message.error('请输入关键词名')
-        return
-      }
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
-          '/sjwh/qsh_keyword/update',
+          '/qsz_pf/message/update',
           qs.stringify({
-            id: this.viewData.Edit.id,
-            kName: this.viewData.Edit.kName,
-            listOrder: this.viewData.Edit.listOrder
+            msgId: this.viewData.Edit.msgId,
+            msgContent: this.viewData.Edit.msgContent,
+            msgTitle: this.viewData.Edit.msgTitle
           })
         )
         .then(response => {
@@ -300,11 +265,9 @@ export default {
       this.searchManage()
     },
     showAdd () {
-      this.viewData.ImgSrc = ''
       this.viewData.modalAdd = true
     },
     showEdit (item) {
-      this.viewData.ImgSrc = item.imageSrc
       this.viewData.Edit = item
       this.viewData.modalEdit = true
     },
@@ -317,14 +280,21 @@ export default {
       this.searchManage()
       this.$Message.success('搜索完成!')
     },
+    onPageChange (pageNum) {
+      this.searchList.searchCondition.page = pageNum
+      this.searchManage()
+    },
     searchManage () {
       axios
-        .get('/sjwh/qsh_keyword/list', {
-          params: {}
+        .get('/qsz_pf/message/list', {
+          params: {
+            page: this.searchList.searchCondition.page,
+            msgTitle: this.searchList.searchCondition.msgTitle
+          }
         })
-        .then(response => {
-          this.searchList.pageData.content = response.data
-          // this.searchList.pageData.total = response.data.total
+        .then(res => {
+          this.searchList.pageData.content = res.data.data
+          this.searchList.pageData.total = res.data.total
         })
     }
   },
@@ -368,25 +338,12 @@ export default {
 
 .btnR {
   float: left;
-  padding: 10px 20px;
+  padding: 10px 18px;
 }
 
 .btnR span {
   display: flex;
   line-height: 20px;
   padding-left: 5px;
-}
-
-.ImgC {
-  opacity: 0;
-  width: 120px;
-  height: 32px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.imgMax {
-  max-width: 300px;
 }
 </style>

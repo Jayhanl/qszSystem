@@ -58,7 +58,7 @@
               确认删除
               <span style="color:red">{{viewData.Delete.name}}</span>
               社区吗？
-              <p>(*将会把该社区下的所有需求删除！)</p>
+              <!-- <p>(*将会把该社区下的所有订单删除！)</p> -->
             </Modal>
             <Modal
               v-model="viewData.modalAdd"
@@ -121,6 +121,24 @@
                       :value="item.label"
                     >{{ item.label }}</Option>
                   </Select>
+                </Form-item>
+                <Form-item class="form_item" label="经度:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.lat"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="经度"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="纬度:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.lng"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="纬度"
+                  ></Input>
                 </Form-item>
               </Form>
             </Modal>
@@ -189,6 +207,24 @@
                     >{{ item.label }}</Option>
                   </Select>
                 </Form-item>
+                <Form-item class="form_item" label="经度:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.lat"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="经度"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="纬度:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.lng"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="纬度"
+                  ></Input>
+                </Form-item>
               </Form>
             </Modal>
           </Form>
@@ -251,6 +287,16 @@ export default {
             key: 'county'
           },
           {
+            title: '经度',
+            align: 'center',
+            key: 'lat'
+          },
+          {
+            title: '纬度',
+            align: 'center',
+            key: 'lng'
+          },
+          {
             title: '是否上架',
             align: 'center',
             key: 'action',
@@ -264,10 +310,10 @@ export default {
                 },
                 slot: {},
                 on: {
-                  'on-change': e => {
+                  'on-change': (e) => {
                     axios
                       .put(
-                        '/sjwh/housing/update_status',
+                        '/qsz_pf/housing/update_status',
                         qs.stringify({
                           id: params.row.id,
                           status: e
@@ -404,12 +450,12 @@ export default {
     },
     onDeleteBtn () {
       axios
-        .delete('/sjwh/housing/delete', {
+        .delete('/qsz_pf/housing/delete', {
           data: {
             id: this.viewData.Delete.id
           }
         })
-        .then(response => {
+        .then((response) => {
           this.$Message.success('删除成功!')
           this.searchManage()
           this.searchPid()
@@ -423,15 +469,17 @@ export default {
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
-          '/sjwh/housing/create',
+          '/qsz_pf/housing/create',
           qs.stringify({
             name: this.viewData.Add.name,
             province: this.viewData.Add.province,
             city: this.viewData.Add.city,
-            county: this.viewData.Add.county
+            county: this.viewData.Add.county,
+            lat: this.viewData.Add.lat,
+            lng: this.viewData.Add.lng
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Add = {}
           this.searchManage()
           this.citiesArr1 = []
@@ -447,16 +495,18 @@ export default {
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
-          '/sjwh/housing/update',
+          '/qsz_pf/housing/update',
           qs.stringify({
             id: this.viewData.Edit.id,
             name: this.viewData.Edit.name,
             province: this.viewData.Edit.province,
             city: this.viewData.Edit.city,
-            county: this.viewData.Edit.county
+            county: this.viewData.Edit.county,
+            lat: this.viewData.Edit.lat,
+            lng: this.viewData.Edit.lng
           })
         )
-        .then(response => {
+        .then((response) => {
           this.viewData.Edit = {}
           this.citiesArr1 = []
           this.countyArr1 = []
@@ -491,14 +541,15 @@ export default {
     searchManage () {
       console.log(this.searchList.searchCondition.pid)
       axios
-        .get('/sjwh/housing/list', {
+        .get('/qsz_pf/housing/list', {
           params: {
+            page: this.searchList.searchCondition.page,
             province: this.searchList.searchCondition.province || '广东省',
             city: this.searchList.searchCondition.city || '广州市',
             county: this.searchList.searchCondition.county || '海珠区'
           }
         })
-        .then(response => {
+        .then((response) => {
           this.searchList.pageData.content = response.data.data
           this.searchList.pageData.total = response.data.total
         })

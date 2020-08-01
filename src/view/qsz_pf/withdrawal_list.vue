@@ -4,19 +4,12 @@
       <Form>
         <Form-item>
           <Form inline>
-            <!-- <Form-item>
-              <Input
-                class="search_item"
-                type="text"
-                v-model="searchList.searchCondition.contactName"
-                clearable
-                placeholder="姓名"
-              ></Input>
+            <Form-item>
               <Select
                 clearable
-                placeholder="状态"
+                placeholder="提现状态"
                 @on-change="searchManage"
-                v-model="searchList.searchCondition.registerStatus"
+                v-model="searchList.searchCondition.status"
                 class="search_item"
               >
                 <Option
@@ -25,26 +18,47 @@
                   :key="item.value"
                 >{{ item.label }}</Option>
               </Select>
-              <Select
-                clearable
-                placeholder="身份"
-                @on-change="searchManage"
-                v-model="searchList.searchCondition.role"
-                class="search_item"
-              >
-                <Option
-                  v-for="item in viewData.roleList"
-                  :value="item.value"
-                  :key="item.value"
-                >{{ item.label }}</Option>
-              </Select>
-            </Form-item> -->
+            </Form-item>
             <Form-item>
               <Button style="margin-right:10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
               <!-- <Button icon="md-add" @click="showCollect()">增加</Button> -->
             </Form-item>
+            <Modal
+              :mask-closable="false"
+              title="拒绝确认"
+              width="400"
+              v-model="viewData.modalRefuse"
+              @on-ok="onAuditBtn(0)"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item">
+                  确认拒绝提现订单ID：
+                  <span style="color:red">{{viewData.Confirm.orderId}}</span>
+                  的审核吗？
+                </Form-item>
+                <Form-item class="form_item" label="拒绝原因:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Confirm.reason"
+                    type="text"
+                    placeholder="请输入拒绝原因"
+                  ></Input>
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="通过确认"
+              width="400"
+              v-model="viewData.modalPass"
+              @on-ok="onAuditBtn(1)"
+            >
+              确认通过提现订单ID：
+              <span style="color:red">{{viewData.Confirm.orderId}}</span>
+              的审核吗？
+            </Modal>
 
             <Modal
               title="查看用户信息详情"
@@ -55,19 +69,19 @@
               <div class="order_info">
                 <h3>用户信息</h3>
                 <Row>
-                  <Col span="10">用户id: {{viewData.Detail.userId}}</Col>
+                  <Col span="10">用户id: {{viewData.Detail.id}}</Col>
                   <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
                   <!-- <Col span="10">用户状态: {{viewData.Detail.vipLevel?'VIP':'普通用户'}}</Col> -->
                 </Row>
                 <Row>
-                  <Col span="10">姓名: {{viewData.Detail.contactName}}</Col>
+                  <Col span="10">姓名: {{viewData.Detail.name}}</Col>
                   <Col span="10">联系电话: {{viewData.Detail.contactMobile}}</Col>
                 </Row>
                 <h4>地址: {{viewData.Detail.contactAddr}}</h4>
                 <!-- <Row>
                   <Col span="10">房号: {{viewData.Detail.houseNum}}</Col>
                   <Col span="10">户型: {{viewData.Detail.houseSize}}</Col>
-                </Row> -->
+                </Row>-->
                 <Row>
                   <!-- <Col span="10">VIP过期时间: {{viewData.Detail.vipPastTime}}</Col> -->
                   <Col span="10">汽车外部清洗优惠券: {{viewData.Detail.carDiscountNum}}</Col>
@@ -78,7 +92,7 @@
                 </Row>
                 <!-- <Row>
                   <Col span="10">充值VIP次数: {{viewData.Detail.vipCount}}</Col>
-                </Row> -->
+                </Row>-->
               </div>
             </Modal>
             <Modal
@@ -88,7 +102,7 @@
               @on-ok="onDeleteBtn"
             >
               确认删除id为：
-              <span style="color:red">{{viewData.Delete.userId}}</span>
+              <span style="color:red">{{viewData.Delete.id}}</span>
               的信息吗？
             </Modal>
           </Form>
@@ -120,35 +134,47 @@ export default {
         Info: [],
         columns: [
           {
-            title: '用户ID',
+            title: '提现订单ID',
             align: 'center',
-            key: 'userId',
-            width: 120
+            key: 'orderId'
           },
           {
             title: '姓名',
             align: 'center',
-            key: 'contactName'
+            key: 'name'
           },
           {
-            title: '联系电话',
+            title: '账号(电话)',
             align: 'center',
-            key: 'contactMobile'
+            key: 'account'
           },
           {
-            title: '照明安装优惠券',
+            title: '提现金额',
             align: 'center',
-            key: 'illDiscountNum'
+            key: 'num',
+            render: (h, params) => {
+              return h('span', params.row.num + '元')
+            }
           },
           {
-            title: '2小时保洁优惠券',
+            title: '申请时间',
             align: 'center',
-            key: 'cleanDiscountNum'
+            key: 'createTime'
           },
           {
-            title: '汽车外部清洗优惠券',
+            title: '审核时间',
             align: 'center',
-            key: 'carDiscountNum'
+            key: 'auditTime'
+          },
+          {
+            title: '审核状态',
+            align: 'center',
+            key: 'statusChina'
+          },
+          {
+            title: '拒绝原因',
+            align: 'center',
+            key: 'result'
           },
           {
             title: '操作',
@@ -156,30 +182,48 @@ export default {
             width: 200,
             align: 'center',
             render: (h, params) => {
-              return h('div', [
-                h(
-                  'Button',
-                  {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '15px'
-                    },
-                    on: {
-                      click: () => {
-                        this.showDetail(params.row)
+              const arr = []
+              if (params.row.status === 0) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showPass(params.row)
+                        }
                       }
-                    }
-                  },
-                  '详情'
+                    },
+                    '通过审核'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'warning',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showRefuse(params.row)
+                        }
+                      }
+                    },
+                    '拒绝审核'
+                  )
                 )
-              ])
+              }
+              return h('div', arr)
             }
           }
         ],
-        data: [],
         pageData: {
           content: [],
           total: 0,
@@ -189,41 +233,33 @@ export default {
           page: 1,
           limit: 10
         },
-        pageData1: {
-          content: [],
-          total: 0,
-          pageNum: 1
-        },
-        searchCondition1: {
-          page: 1,
-          limit: 8
-        },
         pageSizeOpts: [1, 5, 10, 20, 30, 40]
       },
       viewData: {
-        modalPay: false,
-        modalCollect: false,
+        modalChecking: false,
         modalDelete: false,
         modalDetail: false,
-        Confirm: '',
+        modalRefuse: false,
+        modalPass: false,
+        Confirm: {},
         Detail: {},
         Delete: {},
         statusList: [
           {
             value: 0,
-            label: '未注册'
+            label: '待审核'
           },
           {
             value: 1,
-            label: '注册中'
-          },
-          {
-            value: 2,
-            label: '已通过'
+            label: '已完成'
           },
           {
             value: -1,
-            label: '审核失败'
+            label: '已取消'
+          },
+          {
+            value: -2,
+            label: '不通过'
           }
         ]
       }
@@ -239,20 +275,47 @@ export default {
     },
     onDeleteBtn () {
       axios
-        .delete('/qsz_pf/user/delete', {
+        .delete('/qsz_pf/wallet/delete', {
           data: {
-            userId: this.viewData.Delete.userId
+            id: this.viewData.Delete.id
           }
         })
-        .then(res => {
+        .then((res) => {
           this.$Message.success('删除成功!')
           this.searchManage()
         })
     },
     showDetail (row) {
       this.viewData.modalDetail = true
+      this.viewData.id = row.id
+      this.searchDetail()
+    },
+    showChecking (row) {
+      this.viewData.modalChecking = true
       this.viewData.Detail = row
-      this.viewData.userId = row.userId
+      this.viewData.id = row.id
+      this.searchChecking()
+    },
+    showPass (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalPass = true
+    },
+    showRefuse (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalRefuse = true
+    },
+    onAuditBtn (status) {
+      axios
+        .put('/qsz_pf/wallet/withdrawal_audit', {
+          id: this.viewData.Confirm.id,
+          isPass: status,
+          reason: status ? '' : this.viewData.Confirm.reason
+        })
+        .then((response) => {
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
     },
     onModelCancel () {
       this.searchManage()
@@ -268,28 +331,29 @@ export default {
     },
     searchManage () {
       axios
-        .get('/qsz_pf/user/list', {
+        .get('/qsz_pf/wallet/withdrawal_list', {
           params: {
             page: this.searchList.searchCondition.page,
-            contactName: this.searchList.searchCondition.contactName,
-            registerStatus: this.searchList.searchCondition.registerStatus,
+            name: this.searchList.searchCondition.name,
+            account: this.searchList.searchCondition.account,
+            orderModel: this.searchList.searchCondition.orderModel,
+            status: this.searchList.searchCondition.status,
             role: this.searchList.searchCondition.role
           }
         })
-        .then(res => {
+        .then((res) => {
           this.searchList.pageData.content = res.data.data
           this.searchList.pageData.total = res.data.total
         })
     },
     searchDetail () {
       axios
-        .get('/qsz_pf/user/personal_detail', {
+        .get('/qsz_pf/wallet/detail', {
           params: {
-            userId: this.viewData.Detail.userId,
-            role: this.viewData.Detail.role
+            id: this.viewData.Detail.id
           }
         })
-        .then(res => {
+        .then((res) => {
           this.viewData.Detail = res.data
         })
     }

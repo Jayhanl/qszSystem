@@ -80,7 +80,7 @@
         </Form>
         <Form-item style="padding-top: 10px;">
           <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
-          <Page style="padding-top: 10px" :total="searchList.pageData.total" :current="searchList.pageData.pageNum"
+          <Page style="padding-top: 10px" :total="searchList.pageData.total" :current="searchList.searchCondition.page"
             :page-size="10" @on-change="onPageChange" size="small" show-total></Page>
         </Form-item>
       </Form-item>
