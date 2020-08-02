@@ -11,7 +11,7 @@ export const login = ({
     password: md5(password)
   }
   return axios.request({
-    url: '/api/login/login_in',
+    url: '/qsz_pf/login/login_in',
     data,
     method: 'post'
   })
@@ -19,7 +19,7 @@ export const login = ({
 
 export const getUserInfo = () => {
   return axios.request({
-    url: '/api/common/role_path',
+    url: '/qsz_pf/common/role_path',
     method: 'get'
   })
 }
@@ -36,7 +36,7 @@ export const changeUserPsw = (password) => {
     password: md5(password)
   }
   return axios.request({
-    url: '/api/common/update_password',
+    url: '/qsz_pf/common/update_password',
     data,
     method: 'put'
   })

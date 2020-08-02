@@ -30,5 +30,6 @@ export default {
   qsz_pf_msg_list: '信息列表',
   qsz_pf_sign_list: '用户签到',
   qsz_pf_tx_list: '提现列表',
-  qsz_pf_setting_list: '系统设置'
+  qsz_pf_setting_list: '系统设置',
+  qsz_pf_data_list: '数据统计'
 }

@@ -246,11 +246,34 @@
                 <h4>详细地址: {{viewData.Detail.contactAddr}}</h4>
                 <Row v-for="item in viewData.Detail.serviceList" :key="item.serviceId">
                   <Col span="10">服务名: {{item.serviceName}}</Col>
-                  <Col span="10">数量: {{item.num}}</Col>
+                  <Col span="10">单位: {{item.num+item.unit}}</Col>
                 </Row>
                 <Row>
                   <Col span="10">预约日期: {{viewData.Detail.yyDate}}</Col>
                   <Col span="10">预约时间: {{viewData.Detail.yyTime}} 点</Col>
+                </Row>
+                <h3>员工上传照片</h3>
+                <Row>
+                  <Col span="4">订单到达照片</Col>
+                  <Col span="18">
+                    <img
+                      :src="viewData.Detail.arriveImg"
+                      class="img_item"
+                      preview="0"
+                      preview-text="订单到达照片"
+                    />
+                  </Col>
+                </Row>
+                <Row >
+                  <Col span="4">订单完成照片</Col>
+                  <Col span="18">
+                    <img
+                      :src="viewData.Detail.doneImg"
+                      class="img_item"
+                      preview="1"
+                      preview-text="订单完成照片"
+                    />
+                  </Col>
                 </Row>
               </div>
             </Modal>
@@ -858,6 +881,7 @@ export default {
         })
         .then((res) => {
           this.viewData.Detail = res.data
+          this.$previewRefresh()
         })
     }
   },

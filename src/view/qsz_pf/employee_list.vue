@@ -168,6 +168,9 @@
                   <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
                   <Col span="10">邀请码: {{viewData.Detail.empInvCode}}</Col>
                 </Row>
+                <Row v-if="viewData.Detail.role===2">
+                  <Col span="10">合伙人期限: {{viewData.Detail.payRentDate}}</Col>
+                </Row>
                 <h3>钱包信息</h3>
                 <Row>
                   <Col span="10">推广收入: {{viewData.Detail.awardTotal}}元</Col>

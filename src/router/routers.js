@@ -47,32 +47,32 @@ export default [{
     component: () => import('@/view/home-page')
   }]
 },
-{
-  path: '/qsz',
-  name: '轻松装',
-  meta: {
-    icon: 'ios-construct',
-    title: '轻松装'
-  },
-  component: Main,
-  children: [{
-    path: 'qsz_order_list',
-    name: 'qsz_order_list',
-    meta: {
-      icon: 'md-list-box',
-      title: '订单列表'
-    },
-    component: () => import('@/view/qsz/order_list.vue')
-  }, {
-    path: 'qsz_user_list',
-    name: 'qsz_user_list',
-    meta: {
-      icon: 'md-contacts',
-      title: '用户管理'
-    },
-    component: () => import('@/view/qsz/user_list.vue')
-  }]
-},
+// {
+//   path: '/qsz',
+//   name: '轻松装',
+//   meta: {
+//     icon: 'ios-construct',
+//     title: '轻松装'
+//   },
+//   component: Main,
+//   children: [{
+//     path: 'qsz_order_list',
+//     name: 'qsz_order_list',
+//     meta: {
+//       icon: 'md-list-box',
+//       title: '订单列表'
+//     },
+//     component: () => import('@/view/qsz/order_list.vue')
+//   }, {
+//     path: 'qsz_user_list',
+//     name: 'qsz_user_list',
+//     meta: {
+//       icon: 'md-contacts',
+//       title: '用户管理'
+//     },
+//     component: () => import('@/view/qsz/user_list.vue')
+//   }]
+// },
 {
   path: '/qsz_pf',
   name: '轻松装平台',
@@ -170,6 +170,14 @@ export default [{
       title: '系统设置'
     },
     component: () => import('@/view/qsz_pf/setting_list.vue')
+  }, {
+    path: 'data_list',
+    name: 'qsz_pf_data_list',
+    meta: {
+      icon: 'md-analytics',
+      title: '数据统计'
+    },
+    component: () => import('@/view/qsz_pf/data_list.vue')
   }]
 },
 {
