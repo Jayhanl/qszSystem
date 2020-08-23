@@ -45,7 +45,7 @@
                   :key="item.value"
                 >{{ item.label }}</Option>
               </Select>
-              <Select
+              <!-- <Select
                 clearable
                 placeholder="派单模式"
                 @on-change="searchManage"
@@ -57,7 +57,7 @@
                   :value="item.value"
                   :key="item.value"
                 >{{ item.label }}</Option>
-              </Select>
+              </Select> -->
             </Form-item>
             <Form-item>
               <Button style="margin-right:10px" @click="searchPageReturn">
@@ -157,9 +157,9 @@
                 </Row>
                 <Row>
                   <Col span="10">性别: {{viewData.Detail.idcGender}}</Col>
-                  <Col span="10">身份证号: {{viewData.Detail.idcValidDate}}</Col>
+                  <Col span="10">身份证号: {{viewData.Detail.idcId}}</Col>
                 </Row>
-                <h4>身份证地址: {{viewData.Detail.idcAddr}}</h4></h4>
+                <h4>身份证地址: {{viewData.Detail.idcAddr}}</h4>
                 <Row>
                   <Col span="10">审核状态: {{viewData.Detail.statusChina}}</Col>
                   <Col span="10">接单模式: {{viewData.Detail.orderModelChina}}</Col>
@@ -282,11 +282,6 @@ export default {
             title: '身份',
             align: 'center',
             key: 'roleChina'
-          },
-          {
-            title: '派单模式',
-            align: 'center',
-            key: 'orderModelChina'
           },
           {
             title: '操作',
@@ -589,7 +584,7 @@ export default {
             page: this.searchList.searchCondition.page,
             name: this.searchList.searchCondition.name,
             account: this.searchList.searchCondition.account,
-            orderModel: this.searchList.searchCondition.orderModel,
+            // orderModel: this.searchList.searchCondition.orderModel,
             status: this.searchList.searchCondition.status,
             role: this.searchList.searchCondition.role
           }

@@ -47,38 +47,12 @@ export default [{
     component: () => import('@/view/home-page')
   }]
 },
-// {
-//   path: '/qsz',
-//   name: '轻松装',
-//   meta: {
-//     icon: 'ios-construct',
-//     title: '轻松装'
-//   },
-//   component: Main,
-//   children: [{
-//     path: 'qsz_order_list',
-//     name: 'qsz_order_list',
-//     meta: {
-//       icon: 'md-list-box',
-//       title: '订单列表'
-//     },
-//     component: () => import('@/view/qsz/order_list.vue')
-//   }, {
-//     path: 'qsz_user_list',
-//     name: 'qsz_user_list',
-//     meta: {
-//       icon: 'md-contacts',
-//       title: '用户管理'
-//     },
-//     component: () => import('@/view/qsz/user_list.vue')
-//   }]
-// },
 {
-  path: '/qsz_pf',
-  name: '轻松装平台',
+  path: '/qsz',
+  name: '轻家政平台',
   meta: {
     icon: 'ios-construct',
-    title: '轻松装'
+    title: '轻家政'
   },
   component: Main,
   children: [{
@@ -91,93 +65,117 @@ export default [{
     component: parentView,
     children: [{
       path: 'jw_list',
-      name: 'qsz_pf_jw_list',
+      name: 'qsz_jw_list',
       meta: {
         icon: 'md-cube',
         title: '旧物回收列表'
       },
-      component: () => import('@/view/qsz_pf/jw_list.vue')
+      component: () => import('@/view/qsz/jw_list.vue')
     }, {
       path: 'msg_list',
-      name: 'qsz_pf_msg_list',
+      name: 'qsz_msg_list',
       meta: {
         icon: 'md-megaphone',
         title: '信息列表'
       },
-      component: () => import('@/view/qsz_pf/msg_list.vue')
+      component: () => import('@/view/qsz/msg_list.vue')
     }, {
       path: 'em_list',
-      name: 'qsz_pf_em_list',
+      name: 'qsz_em_list',
       meta: {
         icon: 'md-person',
         title: '员工列表'
       },
-      component: () => import('@/view/qsz_pf/employee_list.vue')
+      component: () => import('@/view/qsz/employee_list.vue')
     }, {
       path: 'tx_list',
-      name: 'qsz_pf_tx_list',
+      name: 'qsz_tx_list',
       meta: {
         icon: 'logo-yen',
         title: '提现列表'
       },
-      component: () => import('@/view/qsz_pf/withdrawal_list.vue')
+      component: () => import('@/view/qsz/withdrawal_list.vue')
     }]
   }, {
     path: 'sq_list',
-    name: 'qsz_pf_sq_list',
+    name: 'qsz_sq_list',
     meta: {
       icon: 'ios-list',
       title: '社区列表'
     },
-    component: () => import('@/view/qsz_pf/sq_list.vue')
+    component: () => import('@/view/qsz/sq_list.vue')
   }, {
     path: 'fw_list',
-    name: 'qsz_pf_fw_list',
+    name: 'qsz_fw_list',
     meta: {
       icon: 'md-pricetag',
       title: '服务项目'
     },
-    component: () => import('@/view/qsz_pf/fw_list.vue')
+    component: () => import('@/view/qsz/fw_list.vue')
   }, {
     path: 'order_list',
-    name: 'qsz_pf_order_list',
+    name: 'qsz_order_list',
     meta: {
       icon: 'md-list-box',
       title: '订单列表'
     },
-    component: () => import('@/view/qsz_pf/order_list.vue')
+    component: () => import('@/view/qsz/order_list.vue')
   }, {
-    path: 'user_list',
-    name: 'qsz_pf_user_list',
+    path: 'mask_order',
+    name: 'qsz_mask_order',
+    meta: {
+      icon: 'ios-plane',
+      title: '口罩订单'
+    },
+    component: () => import('@/view/qsz/mask_order.vue')
+  }, {
+    path: 'coupon_order',
+    name: 'qsz_coupon_order',
+    meta: {
+      icon: 'ios-paper-plane',
+      title: '优惠券订单'
+    },
+    component: () => import('@/view/qsz/coupon_order.vue')
+  }, {
+    path: 'company_clean',
+    name: 'qsz_company_clean',
+    meta: {
+      icon: 'md-desktop',
+      title: '办公保洁订单'
+    },
+    component: () => import('@/view/qsz/company_clean.vue')
+  }, {
+    path: 'qsz_user_list',
+    name: 'qsz_user_list',
     meta: {
       icon: 'md-contacts',
       title: '用户管理'
     },
-    component: () => import('@/view/qsz_pf/user_list.vue')
+    component: () => import('@/view/qsz/user_list.vue')
   }, {
     path: 'sign_list',
-    name: 'qsz_pf_sign_list',
+    name: 'qsz_sign_list',
     meta: {
       icon: 'md-log-in',
       title: '用户签到'
     },
-    component: () => import('@/view/qsz_pf/sign_list.vue')
+    component: () => import('@/view/qsz/sign_list.vue')
   }, {
     path: 'setting_list',
-    name: 'qsz_pf_setting_list',
+    name: 'qsz_setting_list',
     meta: {
       icon: 'md-settings',
       title: '系统设置'
     },
-    component: () => import('@/view/qsz_pf/setting_list.vue')
+    component: () => import('@/view/qsz/setting_list.vue')
   }, {
     path: 'data_list',
-    name: 'qsz_pf_data_list',
+    name: 'qsz_data_list',
     meta: {
       icon: 'md-analytics',
       title: '数据统计'
     },
-    component: () => import('@/view/qsz_pf/data_list.vue')
+    component: () => import('@/view/qsz/data_list.vue')
   }]
 },
 {

@@ -37,13 +37,13 @@
           <!-- 师傅端 -->
           <div class="price_container">
             <span>师傅端:</span>
-            <Form-item label="订单达到距离限制（km）:">
+            <Form-item label="订单达到距离限制（米）:">
               <Input
                 style="width: 170px"
                 v-model="viewData.Edit.empArriveDistance"
                 type="number"
                 :maxlength="7"
-                placeholder="请输入正数（km）"
+                placeholder="请输入正数（米）"
               ></Input>
             </Form-item>
             <Form-item label="订单接单间隔限制（小时）:">
@@ -53,6 +53,15 @@
                 type="number"
                 :maxlength="7"
                 placeholder="请输入正数（小时）"
+              ></Input>
+            </Form-item>
+            <Form-item label="x分钟前可取消订单:">
+              <Input
+                style="width: 170px"
+                v-model="viewData.Edit.empCancelTimeDiff"
+                type="number"
+                :maxlength="7"
+                placeholder="请输入正数（分钟）"
               ></Input>
             </Form-item>
             <Form-item label="合伙人每月租金（元）:">
@@ -114,6 +123,7 @@ export default {
           qs.stringify({
             empArriveDistance: EditData.empArriveDistance,
             empReceiveTimeDiff: EditData.empReceiveTimeDiff,
+            empCancelTimeDiff: EditData.empCancelTimeDiff,
             empRentPrice: EditData.empRentPrice,
             signAwardNum: EditData.signAwardNum
           })

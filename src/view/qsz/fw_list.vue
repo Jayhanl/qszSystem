@@ -57,6 +57,15 @@
                     placeholder="服务价格"
                   ></Input>
                 </Form-item>
+                <Form-item class="form_item" label="服务备注:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.tips"
+                    type="text"
+                    :maxlength="50"
+                    placeholder="服务备注"
+                  ></Input>
+                </Form-item>
                 <Form-item class="form_item" label="排序序号:">
                   <Input
                     style="width: 200px"
@@ -103,6 +112,15 @@
                     type="text"
                     :maxlength="10"
                     placeholder="服务价格"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务备注:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.tips"
+                    type="text"
+                    :maxlength="50"
+                    placeholder="服务备注"
                   ></Input>
                 </Form-item>
                 <Form-item class="form_item" label="排序序号:">
@@ -166,6 +184,11 @@ export default {
             render: (h, params) => {
               return h('span', params.row.servicePrice + '元')
             }
+          },
+          {
+            title: '服务备注',
+            align: 'center',
+            key: 'tips'
           },
           {
             title: '排序序号',
@@ -317,6 +340,7 @@ export default {
           qs.stringify({
             serviceName: this.viewData.Add.serviceName,
             servicePrice: this.viewData.Add.servicePrice,
+            tips: this.viewData.Add.tips || '',
             unit: this.viewData.Add.unit,
             listOrder: this.viewData.Add.listOrder
           })
@@ -340,6 +364,7 @@ export default {
             id: this.viewData.Edit.id,
             serviceName: this.viewData.Edit.serviceName,
             servicePrice: this.viewData.Edit.servicePrice,
+            tips: this.viewData.Edit.tips || '',
             unit: this.viewData.Edit.unit,
             listOrder: this.viewData.Edit.listOrder
           })

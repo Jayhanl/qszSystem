@@ -56,28 +56,24 @@
                 <h3>用户信息</h3>
                 <Row>
                   <Col span="10">用户id: {{viewData.Detail.userId}}</Col>
-                  <Col span="10">用户状态: {{viewData.Detail.vipLevel?'VIP':'普通用户'}}</Col>
+                  <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
+                  <!-- <Col span="10">用户状态: {{viewData.Detail.vipLevel?'VIP':'普通用户'}}</Col> -->
                 </Row>
                 <Row>
                   <Col span="10">姓名: {{viewData.Detail.contactName}}</Col>
                   <Col span="10">联系电话: {{viewData.Detail.contactMobile}}</Col>
                 </Row>
                 <h4>地址: {{viewData.Detail.contactAddr}}</h4>
-                <Row>
-                  <Col span="10">房号: {{viewData.Detail.houseNum}}</Col>
-                  <Col span="10">户型: {{viewData.Detail.houseSize}}</Col>
+                <!-- <Row>
+                  <Col span="10">汽车外部清洗优惠券: {{viewData.Detail.carDiscountNum}}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
-                  <Col span="10">VIP过期时间: {{viewData.Detail.vipPastTime}}</Col>
-                </Row>
-                <Row>
-                  <Col span="10">日免费次数: {{viewData.Detail.vipServiceNum}}</Col>
-                  <Col span="10">周免费次数: {{viewData.Detail.vipServiceNum}}</Col>
-                </Row>
-                <Row>
+                  <Col span="10">2小时保洁优惠券: {{viewData.Detail.cleanDiscountNum}}</Col>
+                  <Col span="10">照明安装优惠券: {{viewData.Detail.illDiscountNum}}</Col>
+                </Row> -->
+                <!-- <Row>
                   <Col span="10">充值VIP次数: {{viewData.Detail.vipCount}}</Col>
-                </Row>
+                </Row> -->
               </div>
             </Modal>
             <Modal
@@ -135,20 +131,28 @@ export default {
             key: 'contactMobile'
           },
           {
-            title: '地址',
+            title: '推荐人编号',
             align: 'center',
-            key: 'contactAddr'
+            key: 'referrerEmployeeId',
+            render (h, parmas) {
+              return h('span', parmas.row.referrerEmployeeId || '无')
+            }
           },
-          {
-            title: '房号',
-            align: 'center',
-            key: 'houseNum'
-          },
-          {
-            title: '户型',
-            align: 'center',
-            key: 'houseSize'
-          },
+          // {
+          //   title: '照明安装优惠券',
+          //   align: 'center',
+          //   key: 'illDiscountNum'
+          // },
+          // {
+          //   title: '2小时保洁优惠券',
+          //   align: 'center',
+          //   key: 'cleanDiscountNum'
+          // },
+          // {
+          //   title: '汽车外部清洗优惠券',
+          //   align: 'center',
+          //   key: 'carDiscountNum'
+          // },
           {
             title: '操作',
             key: 'action',
@@ -224,32 +228,6 @@ export default {
             value: -1,
             label: '审核失败'
           }
-        ],
-        roleList: [
-          {
-            value: 0,
-            label: '普通用户'
-          },
-          {
-            value: 1,
-            label: '学生'
-          },
-          {
-            value: 2,
-            label: '教师'
-          },
-          {
-            value: 3,
-            label: '导师'
-          },
-          {
-            value: 4,
-            label: '机构'
-          },
-          {
-            value: 5,
-            label: '基地'
-          }
         ]
       }
     }
@@ -264,7 +242,7 @@ export default {
     },
     onDeleteBtn () {
       axios
-        .delete('/api/user/delete', {
+        .delete('/qsz_pf/user/delete', {
           data: {
             userId: this.viewData.Delete.userId
           }
@@ -293,7 +271,7 @@ export default {
     },
     searchManage () {
       axios
-        .get('/api/user/list', {
+        .get('/qsz_pf/user/list', {
           params: {
             page: this.searchList.searchCondition.page,
             contactName: this.searchList.searchCondition.contactName,
@@ -308,7 +286,7 @@ export default {
     },
     searchDetail () {
       axios
-        .get('/api/user/personal_detail', {
+        .get('/qsz_pf/user/personal_detail', {
           params: {
             userId: this.viewData.Detail.userId,
             role: this.viewData.Detail.role
