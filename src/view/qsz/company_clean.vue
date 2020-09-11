@@ -12,8 +12,13 @@
                 clearable
                 placeholder="订单ID"
               ></Input>
-              <!-- <Input class="search_item" type="text" v-model="searchList.searchCondition.contactName" clearable
-              placeholder="客户姓名"></Input>-->
+              <Input
+                class="search_item"
+                type="text"
+                v-model="searchList.searchCondition.companyName"
+                clearable
+                placeholder="单位名称"
+              ></Input>
               <Select
                 clearable
                 placeholder="状态"
@@ -35,6 +40,42 @@
             </Form-item>
             <Modal
               :mask-closable="false"
+              title="订单退出服务"
+              width="400"
+              v-model="viewData.modalAudit"
+              @on-ok="onAuditBtn()"
+            >
+              <Form>
+                <Form-item class="form_item">
+                  确认同意订单id：
+                  <span style="color:red">{{viewData.Confirm.orderId}}</span>
+                  退出服务吗？
+                </Form-item>
+                <Form-item class="form_item" label="是否退还押金:">
+                  <RadioGroup v-model="viewData.Confirm.isReturn">
+                    <Radio :label="1">是</Radio>
+                    <Radio :label="0">否</Radio>
+                  </RadioGroup>
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="订单受理"
+              width="400"
+              v-model="viewData.modalAccept"
+              @on-ok="onAcceptBtn()"
+            >
+              <Form>
+                <Form-item class="form_item">
+                  确认受理订单id：
+                  <span style="color:red">{{viewData.Confirm.orderId}}</span>
+                  的订单吗？
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
               title="通过确认"
               width="400"
               v-model="viewData.modalPass"
@@ -46,39 +87,109 @@
                   <span style="color:red">{{viewData.Confirm.orderId}}</span>
                   的审核吗？
                 </Form-item>
-                <Form-item class="form_item" label="服务开始日期:">
-                  <Date-picker
+                <Form-item class="form_item" label="单位面积:">
+                  <Input
                     class="search_item"
-                    type="date"
-                    placeholder="服务开始日期"
-                    @on-change="(datetime) =>{ this.viewData.Confirm.startDate = datetime}"
-                    v-model="viewData.Confirm.startDate"
-                  ></Date-picker>
+                    type="text"
+                    v-model="viewData.Confirm.areaSize"
+                    clearable
+                    placeholder="留空则无需修改（平方米）"
+                  ></Input>
                 </Form-item>
               </Form>
             </Modal>
             <Modal
               :mask-closable="false"
-              title="拒绝确认"
+              title="取消订单"
               width="400"
               v-model="viewData.modalRefuse"
               @on-ok="onCancelBtn()"
             >
               <Form :label-width="80">
                 <Form-item class="form_item">
-                  确认拒绝订单id：
+                  确认取消订单id：
                   <span style="color:red">{{viewData.Confirm.orderId}}</span>
-                  的审核吗？
+                  的订单吗？
                 </Form-item>
-                <Form-item class="form_item" label="拒绝原因:">
+                <Form-item class="form_item" label="取消原因:">
                   <Input
                     style="width: 200px"
                     v-model="viewData.Confirm.reason"
                     type="text"
-                    placeholder="请输入拒绝原因"
+                    placeholder="请输入取消原因"
                   ></Input>
                 </Form-item>
               </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="取消预约"
+              width="400"
+              v-model="viewData.modalCancelYy"
+              @on-ok="onCancelYyBtn"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item">
+                  确认取消id为：
+                  <span style="color:red">{{viewData.Confirm.id}}</span>
+                  的预约吗？
+                </Form-item>
+                <Form-item class="form_item" label="确认取消:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Confirm.reason"
+                    type="text"
+                    placeholder="请输入“确认取消”"
+                  ></Input>
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="完成预约"
+              width="400"
+              v-model="viewData.modalConfirmYy"
+              @on-ok="onConfirmYyBtn"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item">
+                  确认完成id为：
+                  <span style="color:red">{{viewData.Confirm.id}}</span>
+                  的预约吗？
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal :mask-closable="false" width="400" v-model="viewData.modalDelete"></Modal>
+            <Modal :mask-closable="false" :title="'订单预约列表'" width="80" v-model="viewData.modalYy">
+              预约状态：
+              <Select
+                clearable
+                placeholder="预约状态"
+                @on-change="searchYy"
+                v-model="searchList.searchCondition2.status"
+                class="search_item"
+              >
+                <Option
+                  v-for="item in viewData.yyList"
+                  :value="item.value"
+                  :key="item.value"
+                >{{ item.label }}</Option>
+              </Select>
+              <i-table
+                style="margin-top: 10px"
+                border
+                :columns="searchList.columns2"
+                :data="searchList.searchCondition2.content"
+              ></i-table>
+              <Page
+                style="padding-top: 10px"
+                :total="searchList.searchCondition2.total"
+                :current="searchList.searchCondition2.page"
+                :page-size="10"
+                @on-change="onPageChange2"
+                size="small"
+                show-total
+              ></Page>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -86,74 +197,129 @@
               v-model="viewData.modalDelete"
               @on-ok="onDeleteBtn"
             ></Modal>
-            <Modal
-              title="查看订单信息详情"
-              width="55"
-              :styles="{top: '70px'}"
-              v-model="viewData.modalDetail"
-            >
+            <Modal :mask-closable="false" :title="'订单缴费列表'" width="80" v-model="viewData.modalFee">
+              <i-table
+                border
+                :columns="searchList.columns1"
+                :data="searchList.searchCondition1.content"
+              ></i-table>
+              <Page
+                style="padding-top: 10px"
+                :total="searchList.searchCondition1.total"
+                :current="searchList.searchCondition1.page"
+                :page-size="10"
+                @on-change="onPageChange1"
+                size="small"
+                show-total
+              ></Page>
+            </Modal>
+            <Modal title="查看订单详情" width="55" :styles="{top: '70px'}" v-model="viewData.modalDetail">
               <div class="order_info">
                 <h3>订单信息</h3>
                 <Row>
-                  <Col span="10">订单id: {{viewData.Detail.orderId}}</Col>
-                  <Col span="10">订单状态: {{viewData.Detail.orderStatusChina}}</Col>
+                  <Col span="10">订单id: {{viewData.Detail.orderDetail.orderId}}</Col>
+                  <Col span="10">订单状态: {{viewData.Detail.orderDetail.orderStatusChina}}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">单位名称: {{viewData.Detail.companyName}}</Col>
-                  <Col span="10">单位平方: {{viewData.Detail.areaSize}}平方</Col>
+                  <Col span="10">单位名称: {{viewData.Detail.orderDetail.companyName}}</Col>
+                  <Col span="10">单位标签: {{viewData.Detail.orderDetail.tagName}}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">联系人: {{viewData.Detail.contactName}}</Col>
-                  <Col span="10">联系电话: {{viewData.Detail.contactMobile}}</Col>
+                  <Col span="10">联系人: {{viewData.Detail.orderDetail.contactName}}</Col>
+                  <Col span="10">联系电话: {{viewData.Detail.orderDetail.contactMobile}}</Col>
                 </Row>
-                <h4>单位地址: {{viewData.Detail.companyAddr}}</h4>
-                <Row></Row>
+                <Row>
+                  <Col span="10">单位平方: {{viewData.Detail.orderDetail.areaSize}} m²</Col>
+                  <Col span="10">办公楼: {{viewData.Detail.orderDetail.buildingName}}</Col>
+                </Row>
+                <h4>单位地址: {{viewData.Detail.orderDetail.companyAddr}}</h4>
+                <h4>可开发票金额: {{viewData.Detail.orderDetail.invoicePrice}}元</h4>
+                <Row>
+                  <Col span="10">保证金状态: {{viewData.Detail.orderDetail.invoicePrice}}</Col>
+                  <Col span="10">保证金期限: {{viewData.Detail.orderDetail.agreementTime}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">创建时间: {{viewData.Detail.orderDetail.createTime}}</Col>
+                  <Col span="10">付款时间: {{viewData.Detail.orderDetail.payTime}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">受理时间: {{viewData.Detail.orderDetail.acceptTime}}</Col>
+                  <Col span="10">审核时间: {{viewData.Detail.orderDetail.auditTime}}</Col>
+                </Row>
                 <Row>
                   <Col
                     span="10"
-                  >套餐类型: {{viewData.Detail.buyMonth===1?'月度套餐':viewData.Detail.buyMonth===6?'半年套餐':'月度套餐'}}</Col>
-                  <Col span="10">每月单价: {{viewData.Detail.unitPrice}}元</Col>
+                  >服务开始时间: {{viewData.Detail.orderDetail.startDate||viewData.Detail.orderDetail.orderStatusChina}}</Col>
+                  <Col
+                    span="10"
+                  >服务结束时间: {{viewData.Detail.orderDetail.endDate||viewData.Detail.orderDetail.orderStatusChina}}</Col>
                 </Row>
-                <Row>
-                  <Col span="10">购买月数: {{viewData.Detail.buyMonth}}月</Col>
-                  <Col span="10">订单金额: {{viewData.Detail.orderPrice}}元</Col>
-                </Row>
-                <Row>
-                  <Col span="10">
-                    是否开局发票:
-                    <span style="color:#f40;">{{viewData.Detail.isNeedInvoice?'是':'否'}}</span>
-                  </Col>
-                  <Col span="10">创建时间: {{viewData.Detail.createTime}}</Col>
-                </Row>
-                <Row>
-                  <Col span="10">付款时间: {{viewData.Detail.payTime}}</Col>
-                  <Col span="10">审核时间: {{viewData.Detail.auditTime}}</Col>
-                  <!-- <Col v-if="viewData.Detail.reason" span="10">拒绝原因: {{viewData.Detail.reason}}</Col> -->
-                </Row>
-                <Row>
-                  <Col span="10">服务开始时间: {{viewData.Detail.startDate||'待审核'}}</Col>
-                  <Col span="10">服务结束时间: {{viewData.Detail.endDate||'待审核'}}</Col>
-                </Row>
-                <h3>租赁平方数合同</h3>
-                <Row>
-                  <!-- <Col span="4">身份证人像面</Col> -->
-                  <Col span="18">
-                    <img
-                      :src="viewData.Detail.contract"
-                      class="img_item"
-                      preview="0"
-                      preview-text="租赁平方数合同"
-                    />
-                  </Col>
-                </Row>
+                <h3>项目信息</h3>
+                <div v-for="item in viewData.Detail.itemList" :key="item.itemId">
+                  <h3>{{item.itemName}}</h3>
+                  <!-- <Row>
+                    <Col span="10">项目ID: {{item.itemId}}</Col>
+                    <Col span="10">项目名称: {{item.itemName}}</Col>
+                  </Row>-->
+                  <Row>
+                    <Col span="10">短服务剩余次数: {{item.sResidualNum}}次</Col>
+                    <Col span="10">长服务剩余次数: {{item.lResidualNum}}次</Col>
+                  </Row>
+                  <Row>
+                    <Col span="10">每周服务次数: {{item.weekNum}}</Col>
+                    <Col span="10">服务时间: 每周 {{item.serviceTime}}</Col>
+                  </Row>
+                  <h4 v-if="item.newServiceTime">新服务时间(下周生效): 每周 {{item.newServiceTime}}</h4>
+                  <Row>
+                    <Col span="10">项目开始时间: {{item.startDate}}</Col>
+                    <Col span="10">项目结束时间: {{item.endDate}}</Col>
+                  </Row>
+                </div>
+              </div>
+            </Modal>
+            <Modal
+              title="查看缴费项目详情"
+              width="55"
+              :styles="{top: '70px'}"
+              v-model="viewData.modalFeeDetail"
+            >
+              <div class="order_info">
+                <div v-for="item in viewData.FeeDetail.itemList" :key="item.itemId">
+                  <h3>{{item.itemName}}</h3>
+                  <div v-if="viewData.FeeDetail.orderType === 2">
+                    <Row>
+                      <Col span="10">短服务剩余次数: {{item.sResidualNum}}次</Col>
+                      <Col span="10">长服务剩余次数: {{item.lResidualNum}}次</Col>
+                    </Row>
+                    <Row>
+                      <Col span="10">每周服务次数: {{item.weekNum}}</Col>
+                      <Col span="10">服务时间: 每周 {{item.serviceTime}}</Col>
+                    </Row>
+                    <!-- <h4 v-if="item.newServiceTime">新服务时间(下周生效): 每周 {{item.newServiceTime}}</h4> -->
+                    <Row>
+                      <Col span="10">项目开始时间: {{item.startDate}}</Col>
+                      <Col span="10">项目结束时间: {{item.endDate}}</Col>
+                    </Row>
+                  </div>
+                  <div v-if="viewData.FeeDetail.orderType === 3">
+                    <Row>
+                      <Col span="10">付费价格: {{item.price}}元</Col>
+                      <Col span="10">增加次数: {{item.addNum}}次</Col>
+                    </Row>
+                  </div>
+                </div>
               </div>
             </Modal>
           </Form>
           <Form-item style="padding-top: 10px;">
-            <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
+            <i-table
+              border
+              :columns="searchList.columns"
+              :data="searchList.searchCondition.content"
+            ></i-table>
             <Page
               style="padding-top: 10px"
-              :total="searchList.pageData.total"
+              :total="searchList.searchCondition.total"
               :current="searchList.searchCondition.page"
               :page-size="10"
               @on-change="onPageChange"
@@ -199,6 +365,16 @@ export default {
             key: 'companyName'
           },
           {
+            title: '办公楼',
+            align: 'center',
+            key: 'buildingName'
+          },
+          {
+            title: '详细楼层/地址',
+            align: 'center',
+            key: 'companyAddr'
+          },
+          {
             title: '联系人',
             align: 'center',
             key: 'companyName'
@@ -209,38 +385,9 @@ export default {
             key: 'contactMobile'
           },
           {
-            title: '套餐类型',
-            align: 'center',
-            render (h, params) {
-              return h(
-                'span',
-                params.row.buyMonth === 1
-                  ? '月度套餐'
-                  : params.row.buyMonth === 6
-                    ? '半年套餐'
-                    : '月度套餐'
-              )
-            }
-          },
-          {
-            title: '订单价格',
-            align: 'center',
-            key: 'orderPrice'
-          },
-          {
             title: '订单状态',
             align: 'center',
             key: 'orderStatusChina'
-          },
-          {
-            title: '创建时间',
-            align: 'center',
-            key: 'createTime'
-          },
-          {
-            title: '支付时间',
-            align: 'center',
-            key: 'payTime'
           },
           {
             title: '服务开始时间',
@@ -289,6 +436,39 @@ export default {
                       },
                       on: {
                         click: () => {
+                          this.showAccept(params.row)
+                        }
+                      }
+                    },
+                    '受理订单'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showRefuse(params.row)
+                        }
+                      }
+                    },
+                    '取消订单'
+                  )
+                )
+              } else if (params.row.orderStatus === 2) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
                           this.showPass(params.row)
                         }
                       }
@@ -299,7 +479,7 @@ export default {
                     'Button',
                     {
                       props: {
-                        type: 'warning',
+                        type: 'error',
                         size: 'small'
                       },
                       on: {
@@ -308,7 +488,62 @@ export default {
                         }
                       }
                     },
-                    '拒绝审核'
+                    '取消订单'
+                  )
+                )
+              } else if (params.row.orderStatus === -3) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small',
+                        ghost: true
+                      },
+                      on: {
+                        click: () => {
+                          this.showAudit(params.row)
+                        }
+                      }
+                    },
+                    '同意退出服务'
+                  )
+                )
+              }
+              if (params.row.orderStatus >= 3) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small',
+                        ghost: true
+                      },
+                      on: {
+                        click: () => {
+                          console.log(this)
+                          this.showFee(params.row)
+                        }
+                      }
+                    },
+                    '缴费列表'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'primary',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showYy(params.row)
+                        }
+                      }
+                    },
+                    '预约列表'
                   )
                 )
               }
@@ -316,46 +551,256 @@ export default {
             }
           }
         ],
-        data: [],
-        pageData: {
-          content: [],
-          pageNum: 1,
-          numberOfElements: 0,
-          total: 0,
-          totalPages: 0
-        },
+        columns1: [
+          {
+            title: '缴费Id',
+            align: 'center',
+            key: 'orderId'
+          },
+          {
+            title: '缴费类型',
+            align: 'center',
+            key: 'orderTypeChina'
+          },
+          {
+            title: '缴费状态',
+            align: 'center',
+            key: 'orderStatusChina'
+          },
+          {
+            title: '购买月数',
+            align: 'center',
+            key: 'buyMonth',
+            render (h, params) {
+              return h(
+                'span',
+                params.row.orderType === 1 ? params.row.buyMonth : '非主服务'
+              )
+            }
+          },
+          {
+            title: '赠送月数',
+            align: 'center',
+            key: 'giveMonth',
+            render (h, params) {
+              return h(
+                'span',
+                params.row.orderType === 1 ? params.row.giveMonth : '非主服务'
+              )
+            }
+          },
+          {
+            title: '创建时间',
+            align: 'center',
+            key: 'createTime'
+          },
+          {
+            title: '付款时间',
+            align: 'center',
+            key: 'payTime'
+          },
+          {
+            title: '推荐员工',
+            align: 'center',
+            key: 'referrerId'
+          },
+          {
+            title: '操作',
+            align: 'center',
+            key: 'action',
+            width: 160,
+            render: (h, params) => {
+              const arr = []
+              if (params.row.itemList) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'info',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showFeeDetail(params.row)
+                        }
+                      }
+                    },
+                    '项目详情'
+                  )
+                )
+              }
+              return arr
+            }
+          }
+        ],
+        columns2: [
+          {
+            title: '预约ID',
+            align: 'center',
+            key: 'id',
+            width: 120
+          },
+          {
+            title: '项目名称',
+            align: 'center',
+            key: 'itemName'
+          },
+          {
+            title: '下单时间',
+            align: 'center',
+            key: 'createTime'
+          },
+          {
+            title: '预约服务时间',
+            align: 'center',
+            key: 'yyDate'
+          },
+          {
+            title: '备注',
+            align: 'center',
+            key: 'remark'
+          },
+          {
+            title: '预约状态',
+            align: 'center',
+            key: 'statusChina'
+          },
+          {
+            title: '操作',
+            key: 'action',
+            width: 200,
+            align: 'center',
+            render: (h, params) => {
+              if (params.row.status === 0) {
+                return h('div', [
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showConfirmYy(params.row)
+                        }
+                      }
+                    },
+                    '完成'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showCancelYy(params.row)
+                        }
+                      }
+                    },
+                    '取消'
+                  )
+                ])
+              }
+            }
+          }
+        ],
         searchCondition: {
           page: 1,
-          size: 5,
-          role: 4
+          total: 0,
+          content: []
         },
-        pageSizeOpts: [1, 5, 10, 20, 30, 40]
+        searchCondition1: {
+          page: 1,
+          total: 0,
+          content: []
+        },
+        searchCondition2: {
+          page: 1,
+          total: 0,
+          content: []
+        }
       },
       viewData: {
-        goodsIId: '',
-        Detail: '',
+        id: '',
+        Detail: { orderDetail: {}, itemList: [] },
+        FeeDetail: { itemList: [] },
         Delete: {},
         Confirm: {},
         modalDelete: false,
+        modalCancelYy: false,
+        modalConfirmYy: false,
+        modalAudit: false,
         modalDetail: false,
+        modalFeeDetail: false,
         modalRefuse: false,
         modalPass: false,
-        statusList: [
+        modalAccept: false,
+        modalFee: false,
+        modalYy: false,
+        yyList: [
           {
             value: 0,
-            label: '未付款'
+            label: '待执行'
           },
           {
             value: 1,
-            label: '待审核'
-          },
-          {
-            value: 2,
-            label: '已通过'
+            label: '已完成'
           },
           {
             value: -1,
             label: '已取消'
+          }
+        ],
+        statusList: [
+          {
+            value: 0,
+            label: '待付款'
+          },
+          {
+            value: 1,
+            label: '待受理'
+          },
+          {
+            value: 2,
+            label: '待审核'
+          },
+          {
+            value: 3,
+            label: '进行中'
+          },
+          {
+            value: 4,
+            label: '待续费'
+          },
+          {
+            value: 5,
+            label: '已过期'
+          },
+          {
+            value: -1,
+            label: '不通过'
+          },
+          {
+            value: -2,
+            label: '退款中'
+          },
+          {
+            value: -3,
+            label: '服务退出中'
           }
         ]
       }
@@ -373,6 +818,14 @@ export default {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
+    onPageChange1 (pageNum) {
+      this.searchList.searchCondition1.page = pageNum
+      this.searchFee()
+    },
+    onPageChange2 (pageNum) {
+      this.searchList.searchCondition2.page = pageNum
+      this.searchYy()
+    },
     onDeleteBtn () {
       axios
         .delete('/qsz_pf/merchant/delete', {
@@ -385,16 +838,17 @@ export default {
           this.searchManage()
         })
     },
-    oncancel () {
-      if (this.viewData.Confirm.reason !== '确认取消') {
-        this.$Message.error('请输入"确认取消"四个字')
+    onAuditBtn () {
+      if (![0, 1].includes(this.viewData.Confirm.isReturn)) {
+        this.$Message.error('请选择是否退款')
         return false
       }
       axios
         .put(
-          '/qsz_pf/demand_order/cancel',
+          '/qsz_pf/demand_order/audit',
           qs.stringify({
-            id: this.viewData.Confirm.id
+            id: this.viewData.Confirm.id,
+            isReturn: this.viewData.Confirm.isReturn
           })
         )
         .then((response) => {
@@ -408,9 +862,26 @@ export default {
     },
     showDetail (row) {
       this.viewData.modalDetail = true
-      this.viewData.Detail = row
+      // this.viewData.Detail = row
       this.viewData.id = row.id
-      // this.searchDetail()
+      this.searchDetail()
+    },
+    showFeeDetail (row) {
+      this.viewData.modalFeeDetail = true
+      if (row.orderType === 2) {
+        for (let i = 0; i < row.itemList.length; i++) {
+          row.itemList[i].serviceTime = row.itemList[i].serviceTime.join(',')
+        }
+      }
+      this.viewData.FeeDetail = row
+    },
+    showAccept (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalAccept = true
+    },
+    showAudit (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalAudit = true
     },
     showPass (item) {
       this.viewData.Confirm = item
@@ -424,15 +895,32 @@ export default {
       this.viewData.Delete = item
       this.viewData.modalDelete = true
     },
-    onPassBtn (status) {
-      if (!this.viewData.Confirm.startDate) {
-        this.$Message.error('请选择服务开始日期')
-        return false
-      }
+    showFee (item) {
+      this.viewData.id = item.id
+      this.searchFee()
+      this.viewData.modalFee = true
+    },
+    showYy (item) {
+      this.viewData.id = item.id
+      this.searchYy()
+      this.viewData.modalYy = true
+    },
+    onAcceptBtn (status) {
       axios
         .put('/qsz_pf/demand_order/accept', {
+          id: this.viewData.Confirm.id
+        })
+        .then((response) => {
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
+    onPassBtn (status) {
+      axios
+        .put('/qsz_pf/demand_order/pass', {
           id: this.viewData.Confirm.id,
-          startDate: this.viewData.Confirm.startDate
+          areaSize: this.viewData.Confirm.areaSize
         })
         .then((response) => {
           this.viewData.Confirm = {}
@@ -441,6 +929,10 @@ export default {
         })
     },
     onCancelBtn (status) {
+      if (!this.viewData.Confirm.reason) {
+        this.$Message.error('请输入取消原因')
+        return false
+      }
       axios
         .put('/qsz_pf/demand_order/cancel', {
           id: this.viewData.Confirm.id,
@@ -450,6 +942,34 @@ export default {
           this.viewData.Confirm = {}
           this.$Message.success('操作成功!')
           this.searchManage()
+        })
+    },
+    showConfirmYy (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalConfirmYy = true
+    },
+    onCancelYyBtn () {
+      if (this.viewData.Confirm.reason !== '确认取消') {
+        this.$Message.error('请输入"确认取消"四个字')
+        return
+      }
+      axios
+        .put('/qsz_pf/demand_order/cancel_short_item', {
+          id: this.viewData.Confirm.id
+        })
+        .then((response) => {
+          this.$Message.success('操作成功!')
+          this.searchYy()
+        })
+    },
+    onConfirmYyBtn () {
+      axios
+        .put('/qsz_pf/demand_order/done_short_item', {
+          id: this.viewData.Confirm.id
+        })
+        .then((response) => {
+          this.$Message.success('操作成功!')
+          this.searchYy()
         })
     },
     searchPageReturn () {
@@ -463,14 +983,14 @@ export default {
           params: {
             page: this.searchList.searchCondition.page,
             orderId: this.searchList.searchCondition.orderId,
-            contactName: this.searchList.searchCondition.contactName,
+            companyName: this.searchList.searchCondition.companyName,
             orderStatus: this.searchList.searchCondition.orderStatus
           }
         })
         .then((res) => {
           this.$previewRefresh()
-          this.searchList.pageData.content = res.data.data
-          this.searchList.pageData.total = res.data.total
+          this.searchList.searchCondition.content = res.data.data
+          this.searchList.searchCondition.total = res.data.total
         })
     },
     searchDetail () {
@@ -482,6 +1002,33 @@ export default {
         })
         .then((res) => {
           this.viewData.Detail = res.data
+        })
+    },
+    searchFee () {
+      axios
+        .get('/qsz_pf/demand_order/pay_fee_list', {
+          params: {
+            page: this.searchList.searchCondition1.page,
+            id: this.viewData.id
+          }
+        })
+        .then((res) => {
+          this.searchList.searchCondition1.content = res.data.data
+          this.searchList.searchCondition1.total = res.data.total
+        })
+    },
+    searchYy () {
+      axios
+        .get('/qsz_pf/demand_order/yy_list_by_order', {
+          params: {
+            page: this.searchList.searchCondition2.page,
+            status: this.searchList.searchCondition2.status,
+            id: this.viewData.id
+          }
+        })
+        .then((res) => {
+          this.searchList.searchCondition2.content = res.data.data
+          this.searchList.searchCondition2.total = res.data.total
         })
     }
   },

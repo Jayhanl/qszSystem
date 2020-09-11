@@ -140,7 +140,7 @@
             </Modal>
 
             <Modal
-              title="查看用户信息详情"
+              title="查看员工信息详情"
               width="55"
               :styles="{top: '70px'}"
               v-model="viewData.modalDetail"

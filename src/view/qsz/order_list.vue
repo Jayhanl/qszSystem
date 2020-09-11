@@ -252,6 +252,14 @@
                   <Col span="10">预约日期: {{viewData.Detail.yyDate}}</Col>
                   <Col span="10">预约时间: {{viewData.Detail.yyTime}} 点</Col>
                 </Row>
+                <div v-if="viewData.Detail.employeeId!==0&&viewData.Detail.orderStatus!==0&&viewData.Detail.orderStatus!==1">
+                <h3>员工信息
+                  <Button style="margin-left:10px" type="primary" @click="showEmployee">员工详情</Button>
+                </h3>
+                <Row>
+                  <Col span="10">员工编号: {{viewData.Detail.employeeId}}</Col>
+                  <Col span="10">员工姓名: {{viewData.Detail.name}}</Col>
+                </Row>
                 <h3>员工上传照片</h3>
                 <Row>
                   <Col span="4">订单到达照片</Col>
@@ -272,6 +280,73 @@
                       class="img_item"
                       preview="1"
                       preview-text="订单完成照片"
+                    />
+                  </Col>
+                </Row>
+                </div>
+              </div>
+            </Modal>
+            <Modal
+              title="查看员工信息详情"
+              width="55"
+              :styles="{top: '70px'}"
+              v-model="viewData.modalEmployee"
+            >
+              <div class="order_info">
+                <h3>用户信息</h3>
+                <Row>
+                  <Col span="10">用户id: {{viewData.Employee.id}}</Col>
+                  <Col span="10">身份: {{viewData.Employee.roleChina}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">姓名: {{viewData.Employee.name}}</Col>
+                  <Col span="10">账号(电话): {{viewData.Employee.account}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">性别: {{viewData.Employee.idcGender}}</Col>
+                  <Col span="10">身份证号: {{viewData.Employee.idcId}}</Col>
+                </Row>
+                <h4>身份证地址: {{viewData.Employee.idcAddr}}</h4>
+                <Row>
+                  <Col span="10">审核状态: {{viewData.Employee.statusChina}}</Col>
+                  <Col span="10">接单模式: {{viewData.Employee.orderModelChina}}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">加入时间: {{viewData.Employee.createTime}}</Col>
+                  <Col span="10">邀请码: {{viewData.Employee.empInvCode}}</Col>
+                </Row>
+                <Row v-if="viewData.Employee.role===2">
+                  <Col span="10">合伙人期限: {{viewData.Employee.payRentDate}}</Col>
+                </Row>
+                <h3>钱包信息</h3>
+                <Row>
+                  <Col span="10">推广收入: {{viewData.Employee.awardTotal}}元</Col>
+                  <Col span="10">订单总收入: {{viewData.Employee.earningTotal}}元</Col>
+                </Row>
+                <Row>
+                  <Col span="10">余额: {{viewData.Employee.balance}}元</Col>
+                  <Col span="10">可提现金额: {{viewData.Employee.desirableBalance}}元</Col>
+                </Row>
+                <h3>身份证照片</h3>
+                <Row>
+                  <Col span="4">身份证人像面</Col>
+                  <Col span="18">
+                    <img
+                      :src="viewData.Employee.idcFront"
+                      class="img_item"
+                      preview="3"
+                      preview-text="身份证人像面"
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span="4">身份证国徽面</Col>
+                  <Col span="18">
+                    <img
+                      :src="viewData.Employee.idcBack"
+                      class="img_item"
+                      preview="4"
+                      preview-text="身份证国徽面"
                     />
                   </Col>
                 </Row>
@@ -595,11 +670,13 @@ export default {
       viewData: {
         goodsIId: '',
         Detail: '',
+        Employee: {},
         Delete: {},
         Confirm: {},
         Dispatch: {},
         modalDelete: false,
         modalDetail: false,
+        modalEmployee: false,
         modalDispatch: false,
         modalDispatch1: false,
         modalRefuse: false,
@@ -696,6 +773,10 @@ export default {
     onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
+    },
+    onPageChange1 (pageNum) {
+      this.searchList.searchCondition.page1 = pageNum
+      this.searchManage1()
     },
     onDeleteBtn () {
       axios
@@ -796,6 +877,10 @@ export default {
       this.viewData.id = row.id
       this.searchDetail()
     },
+    showEmployee () {
+      this.viewData.modalEmployee = true
+      this.searchDetailE()
+    },
     showPass (item) {
       this.viewData.Confirm = item
       this.viewData.modalPass = true
@@ -881,6 +966,18 @@ export default {
         })
         .then((res) => {
           this.viewData.Detail = res.data
+          this.$previewRefresh()
+        })
+    },
+    searchDetailE () {
+      axios
+        .get('/qsz_pf/employee/detail', {
+          params: {
+            id: this.viewData.Detail.employeeId
+          }
+        })
+        .then((res) => {
+          this.viewData.Employee = res.data
           this.$previewRefresh()
         })
     }

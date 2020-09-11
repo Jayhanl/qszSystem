@@ -145,6 +145,14 @@ export default [{
     },
     component: () => import('@/view/qsz/company_clean.vue')
   }, {
+    path: 'company_clean_yy',
+    name: 'qsz_company_clean_yy',
+    meta: {
+      icon: 'md-alarm',
+      title: '办公保洁预约'
+    },
+    component: () => import('@/view/qsz/company_clean_yy.vue')
+  }, {
     path: 'qsz_user_list',
     name: 'qsz_user_list',
     meta: {

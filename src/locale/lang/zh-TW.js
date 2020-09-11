@@ -32,5 +32,6 @@ export default {
   qsz_data_list: '数据统计',
   qsz_mask_order: '口罩订单',
   qsz_coupon_order: '优惠券订单',
-  qsz_company_clean: '办公保洁订单'
+  qsz_company_clean: '办公保洁订单',
+  qsz_company_clean_yy: '办公保洁预约'
 }

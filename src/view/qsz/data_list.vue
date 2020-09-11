@@ -43,6 +43,13 @@
           <span class="num">{{dataList.doneOrder}}</span>
         </div>
       </div>
+      <div class="item" :style="'border-left:8px solid '+colorList[1]">
+        <Icon style="padding:0 20px" size="50" type="md-clipboard" />
+        <div class="info">
+          <span>今日订单量</span>
+          <span class="num">{{dataList.todayOrder}}</span>
+        </div>
+      </div>
       <div class="item" :style="'border-left:8px solid '+colorList[6]">
         <Icon style="padding:0 20px" size="50" type="md-people" />
         <div class="info">
@@ -55,13 +62,6 @@
         <div class="info">
           <span>当前空闲师傅人数</span>
           <span class="num">{{todayData.isFreeTotal}}</span>
-        </div>
-      </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[1]">
-        <Icon style="padding:0 20px" size="50" type="md-clipboard" />
-        <div class="info">
-          <span>今日订单量</span>
-          <span class="num">{{todayData.todayOrderTotal}}</span>
         </div>
       </div>
     </div>
@@ -190,9 +190,7 @@ export default {
   data () {
     return {
       dataList: {},
-      todayData: {
-        todayOrderTotal: 0
-      },
+      todayData: {},
       todayList: {},
       todayRank: {},
       historyRank: {},
@@ -249,6 +247,10 @@ export default {
         {
           text: '从化区',
           id: 'chq'
+        },
+        {
+          text: '其他地区',
+          id: 'qt'
         }
       ],
       countyTotal: {
@@ -262,7 +264,8 @@ export default {
         hdq: 0,
         nsq: 0,
         zcq: 0,
-        chq: 0
+        chq: 0,
+        qt: 0
       },
       viewData: {
         modalDetail: false,
@@ -273,7 +276,7 @@ export default {
   computed: {
     proportion () {
       return this.accMul(
-        ((this.todayData.isFreeTotal - 5) / this.todayList.length).toFixed(3),
+        (this.todayData.isFreeTotal / this.todayList.length).toFixed(3),
         100
       )
     }
@@ -325,7 +328,6 @@ export default {
           (item) => item.isFree === 1
         ).length
         const list = res.data.forEach((element) => {
-          this.todayData.todayOrderTotal += element.todayOrder
           switch (element.county) {
             case '越秀区':
               this.countyTotal.yxq++
@@ -360,9 +362,11 @@ export default {
             case '从化区':
               this.countyTotal.chq++
               break
+            default:
+              this.countyTotal.qt++
+              break
           }
         })
-        console.log(this.countyTotal)
         this.todayList = res.data
         this.todayRank = res.data.slice(0, 10)
         this.historyRank = res.data.sort((a, b) => b.orderTotal - a.orderTotal)
@@ -372,6 +376,8 @@ export default {
   created () {
     this.searchManage()
     this.searchToday()
+    setInterval(this.searchManage, 21000)
+    setInterval(this.searchToday, 31000)
   }
 }
 </script>
@@ -449,15 +455,15 @@ export default {
     background-color: #3998ea;
     color: #fff;
     border-radius: 6px;
+    .num {
+      color: #fff;
+    }
   }
 }
 .rankCont .rankList .item .num {
   text-align: right;
   color: #3998ea;
   font-size: 18px;
-  &:hover {
-    color: #fff;
-  }
 }
 
 .demo-Circle-custom {
