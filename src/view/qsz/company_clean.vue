@@ -51,6 +51,12 @@
                   <span style="color:red">{{viewData.Confirm.orderId}}</span>
                   退出服务吗？
                 </Form-item>
+                <Form-item class="form_item" label="是否同意退出:">
+                  <RadioGroup v-model="viewData.Confirm.isPass">
+                    <Radio :label="1">是</Radio>
+                    <Radio :label="0">否</Radio>
+                  </RadioGroup>
+                </Form-item>
                 <Form-item class="form_item" label="是否退还押金:">
                   <RadioGroup v-model="viewData.Confirm.isReturn">
                     <Radio :label="1">是</Radio>
@@ -839,8 +845,12 @@ export default {
         })
     },
     onAuditBtn () {
+      if (![0, 1].includes(this.viewData.Confirm.isPass)) {
+        this.$Message.error('请选择是否同意退出服务')
+        return false
+      }
       if (![0, 1].includes(this.viewData.Confirm.isReturn)) {
-        this.$Message.error('请选择是否退款')
+        this.$Message.error('请选择是否同意退款')
         return false
       }
       axios
@@ -848,7 +858,8 @@ export default {
           '/qsz_pf/demand_order/audit',
           qs.stringify({
             id: this.viewData.Confirm.id,
-            isReturn: this.viewData.Confirm.isReturn
+            isReturn: this.viewData.Confirm.isReturn,
+            isPass: this.viewData.Confirm.isPass
           })
         )
         .then((response) => {
