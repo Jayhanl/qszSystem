@@ -222,7 +222,7 @@ export default {
       this.viewData.Edit = item
       this.viewData.modalEdit = true
     },
-    showConfirm () {
+    showConfirm (item) {
       this.viewData.Confirm = item
       this.viewData.modalConfirm = true
     },

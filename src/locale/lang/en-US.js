@@ -33,5 +33,6 @@ export default {
   qsz_mask_order: '口罩订单',
   qsz_coupon_order: '优惠券订单',
   qsz_company_clean: '办公保洁订单',
+  qsz_company_clean_h5: 'h5办公保洁订单',
   qsz_company_clean_yy: '办公保洁预约'
 }

@@ -143,7 +143,15 @@ export default [{
       icon: 'md-desktop',
       title: '办公保洁订单'
     },
-    component: () => import('@/view/qsz/company_clean.vue')
+    component: () => import('@/view/qsz/company_clean_h5.vue')
+  }, {
+    path: 'company_clean_h5',
+    name: 'qsz_company_clean_h5',
+    meta: {
+      icon: 'md-desktop',
+      title: 'h5办公保洁订单'
+    },
+    component: () => import('@/view/qsz/company_clean_h5.vue')
   }, {
     path: 'company_clean_yy',
     name: 'qsz_company_clean_yy',
