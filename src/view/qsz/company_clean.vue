@@ -19,6 +19,8 @@
                 clearable
                 placeholder="单位名称"
               ></Input>
+              <Input class="search_item" type="text" v-model="searchList.searchCondition.contactMobile" clearable
+              placeholder="联系电话"></Input>
               <Select
                 clearable
                 placeholder="状态"
@@ -100,6 +102,24 @@
                     v-model="viewData.Confirm.areaSize"
                     clearable
                     placeholder="留空则无需修改（平方米）"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="玻璃面积:">
+                  <Input
+                    class="search_item"
+                    type="text"
+                    v-model="viewData.Confirm.glassSize"
+                    clearable
+                    placeholder="请输入玻璃面积"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="厕所个数:">
+                  <Input
+                    class="search_item"
+                    type="text"
+                    v-model="viewData.Confirm.toiletNum"
+                    clearable
+                    placeholder="请输入厕所格数"
                   ></Input>
                 </Form-item>
               </Form>
@@ -236,10 +256,13 @@
                 </Row>
                 <Row>
                   <Col span="10">单位平方: {{viewData.Detail.orderDetail.areaSize}} m²</Col>
-                  <Col span="10">办公楼: {{viewData.Detail.orderDetail.buildingName}}</Col>
+                  <Col span="10">玻璃面积: {{viewData.Detail.orderDetail.glassSize}} m²</Col>
                 </Row>
-                <h4>单位地址: {{viewData.Detail.orderDetail.companyAddr}}</h4>
-                <h4>可开发票金额: {{viewData.Detail.orderDetail.invoicePrice}}元</h4>
+                <Row>
+                  <Col span="10">厕所格数: {{viewData.Detail.orderDetail.toiletNum}} 格</Col>
+                  <Col span="10">可开发票金额: {{viewData.Detail.orderDetail.invoicePrice}} 元</Col>
+                </Row>
+                <h4>单位地址: {{viewData.Detail.orderDetail.buildingName + viewData.Detail.orderDetail.companyAddr}}</h4>
                 <Row>
                   <Col span="10">保证金状态: {{viewData.Detail.orderDetail.invoicePrice}}</Col>
                   <Col span="10">保证金期限: {{viewData.Detail.orderDetail.agreementTime}}</Col>
@@ -371,14 +394,12 @@ export default {
             key: 'companyName'
           },
           {
-            title: '办公楼',
+            title: '单位地址',
             align: 'center',
-            key: 'buildingName'
-          },
-          {
-            title: '详细楼层/地址',
-            align: 'center',
-            key: 'companyAddr'
+            key: 'buildingName',
+            render (h, params) {
+              return h('span', params.row.buildingName + params.row.companyAddr)
+            }
           },
           {
             title: '联系人',
@@ -931,7 +952,9 @@ export default {
       axios
         .put('/qsz_pf/demand_order/pass', {
           id: this.viewData.Confirm.id,
-          areaSize: this.viewData.Confirm.areaSize
+          areaSize: this.viewData.Confirm.areaSize,
+          glassSize: this.viewData.Confirm.glassSize,
+          toiletNum: this.viewData.Confirm.toiletNum
         })
         .then((response) => {
           this.viewData.Confirm = {}
@@ -994,7 +1017,7 @@ export default {
           params: {
             page: this.searchList.searchCondition.page,
             orderId: this.searchList.searchCondition.orderId,
-            companyName: this.searchList.searchCondition.companyName,
+            contactMobile: this.searchList.searchCondition.contactMobile,
             orderStatus: this.searchList.searchCondition.orderStatus
           }
         })

@@ -16,15 +16,19 @@
                 class="search_item"
                 type="date"
                 placeholder="预约日期"
-                @on-change="(datetime) =>{ this.searchList.searchCondition.yyDate = datetime}"
+                @on-change="
+                  (datetime) => {
+                    this.searchList.searchCondition.yyDate = datetime
+                  }
+                "
                 v-model="searchList.searchCondition.yyDate"
               ></Date-picker>
               <Input
                 class="search_item"
                 type="text"
-                v-model="searchList.searchCondition.contactName"
+                v-model="searchList.searchCondition.contactMobile"
                 clearable
-                placeholder="客户姓名"
+                placeholder="联系电话"
               ></Input>
               <Select
                 clearable
@@ -37,7 +41,8 @@
                   v-for="item in viewData.statusList"
                   :value="item.value"
                   :key="item.value"
-                >{{ item.label }}</Option>
+                  >{{ item.label }}</Option
+                >
               </Select>
               <Select
                 clearable
@@ -49,8 +54,22 @@
                 <Option value="yyDateDesc">预约日期从近到远</Option>
                 <Option value="yyDateAsc">预约日期从远到近</Option>
               </Select>
+              <Select
+                clearable
+                placeholder="是否使用优惠券"
+                @on-change="searchManage"
+                v-model="searchList.searchCondition.discountType"
+                class="search_item"
+              >
+                <Option
+                  v-for="item in viewData.yhqList"
+                  :value="item.value"
+                  :key="item.value"
+                  >{{ item.label }}</Option
+                >
+              </Select>
               <input
-                style="display:none"
+                style="display: none"
                 class="ImgC"
                 type="file"
                 merchantName="avatar"
@@ -60,7 +79,7 @@
               />
             </Form-item>
             <Form-item>
-              <Button style="margin-right:10px" @click="searchPageReturn">
+              <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
             </Form-item>
@@ -74,8 +93,10 @@
               <Form :label-width="80">
                 <Form-item class="form_item" label="谨慎操作:">
                   确认
-                  <span style="color: red; font-size: 22px;">取消</span> 订单id：
-                  <span style="color:red;font-size: 22px;">{{viewData.Confirm.orderId}}</span>
+                  <span style="color: red; font-size: 22px">取消</span> 订单id：
+                  <span style="color: red; font-size: 22px">{{
+                    viewData.Confirm.orderId
+                  }}</span>
                   吗？
                 </Form-item>
                 <Form-item class="form_item" label="确认取消:">
@@ -96,7 +117,7 @@
               @on-ok="onTogo()"
             >
               确认订单id：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               已上门吗？
             </Modal>
             <Modal
@@ -107,7 +128,7 @@
               @on-ok="onArrive()"
             >
               确认订单id：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               已到达吗？
             </Modal>
             <Modal
@@ -118,7 +139,7 @@
               @on-ok="onDone()"
             >
               确认已完成订单id：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               吗？
             </Modal>
             <Modal
@@ -129,12 +150,12 @@
               @on-ok="onDispatch()"
             >
               确认派遣订单给员工：
-              <span style="color:red">{{viewData.Confirm.name}}</span>
+              <span style="color: red">{{ viewData.Confirm.name }}</span>
               吗？
             </Modal>
             <Modal
               :mask-closable="false"
-              :title="'订单：'+viewData.Dispatch.orderId+'派遣'"
+              :title="'订单：' + viewData.Dispatch.orderId + '派遣'"
               width="60"
               v-model="viewData.modalDispatch"
             >
@@ -158,7 +179,8 @@
                       v-for="item in viewData.statusList1"
                       :value="item.value"
                       :key="item.value"
-                    >{{ item.label }}</Option>
+                      >{{ item.label }}</Option
+                    >
                   </Select>
                   <Select
                     clearable
@@ -171,7 +193,8 @@
                       v-for="item in viewData.roleList"
                       :value="item.value"
                       :key="item.value"
-                    >{{ item.label }}</Option>
+                      >{{ item.label }}</Option
+                    >
                   </Select>
                   <Select
                     clearable
@@ -184,13 +207,14 @@
                       v-for="item in viewData.pdList"
                       :value="item.value"
                       :key="item.value"
-                    >{{ item.label }}</Option>
+                      >{{ item.label }}</Option
+                    >
                   </Select>
-                  <Button style="margin-right:10px" @click="searchPageReturn1">
+                  <Button style="margin-right: 10px" @click="searchPageReturn1">
                     <Icon size="18" type="ios-search" />
                   </Button>
                 </Form-item>
-                <Form-item style="padding-top: 10px;">
+                <Form-item style="padding-top: 10px">
                   <i-table
                     border
                     :columns="searchList.columns1"
@@ -215,117 +239,162 @@
               @on-ok="onDeleteBtn"
             >
               确认删除订单id为：
-              <span style="color:red">{{viewData.Delete.orderId}}</span>
+              <span style="color: red">{{ viewData.Delete.orderId }}</span>
               的订单吗？
             </Modal>
             <Modal
               title="查看订单信息详情"
               width="55"
-              :styles="{top: '70px'}"
+              :styles="{ top: '70px' }"
               v-model="viewData.modalDetail"
             >
               <div class="order_info">
                 <h3>订单信息</h3>
                 <Row>
-                  <Col span="10">订单id: {{viewData.Detail.orderId}}</Col>
-                  <Col span="10">订单状态: {{viewData.Detail.orderStatusChina}}</Col>
+                  <Col span="10">订单id: {{ viewData.Detail.orderId }}</Col>
+                  <Col span="10"
+                    >订单状态: {{ viewData.Detail.orderStatusChina }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">创建时间: {{viewData.Detail.createTime}}</Col>
-                  <Col span="10">下单时间: {{viewData.Detail.payTime}}</Col>
+                  <Col span="10"
+                    >创建时间: {{ viewData.Detail.createTime }}</Col
+                  >
+                  <Col span="10">下单时间: {{ viewData.Detail.payTime }}</Col>
                 </Row>
                 <h3>服务信息</h3>
                 <Row>
-                  <Col span="10">客户姓名: {{viewData.Detail.contactName}}</Col>
-                  <Col span="10">联系电话: {{viewData.Detail.contactMobile}}</Col>
+                  <Col span="10"
+                    >客户姓名: {{ viewData.Detail.contactName }}</Col
+                  >
+                  <Col span="10"
+                    >联系电话: {{ viewData.Detail.contactMobile }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">客户Id: {{viewData.Detail.userId}}</Col>
-                  <Col span="10">优惠券: {{viewData.Detail.discountTypeChina}}</Col>
+                  <Col span="10">客户Id: {{ viewData.Detail.userId }}</Col>
+                  <Col span="10"
+                    >优惠券: {{ viewData.Detail.discountTypeChina }}</Col
+                  >
                 </Row>
-                <h4>详细地址: {{viewData.Detail.contactAddr}}</h4>
-                <Row v-for="item in viewData.Detail.serviceList" :key="item.serviceId">
-                  <Col span="10">服务名: {{item.serviceName}}</Col>
-                  <Col span="10">单位: {{item.num+item.unit}}</Col>
+                <h4>详细地址: {{ viewData.Detail.contactAddr }}</h4>
+                <Row
+                  v-for="item in viewData.Detail.serviceList"
+                  :key="item.serviceId"
+                >
+                  <Col span="10">服务名: {{ item.serviceName }}</Col>
+                  <Col span="10">单位: {{ item.num + item.unit }}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">预约日期: {{viewData.Detail.yyDate}}</Col>
-                  <Col span="10">预约时间: {{viewData.Detail.yyTime}} 点</Col>
+                  <Col span="10">预约日期: {{ viewData.Detail.yyDate }}</Col>
+                  <Col span="10">预约时间: {{ viewData.Detail.yyTime }} 点</Col>
                 </Row>
-                <div v-if="viewData.Detail.employeeId!==0&&viewData.Detail.orderStatus!==0&&viewData.Detail.orderStatus!==1">
-                <h3>员工信息
-                  <Button style="margin-left:10px" type="primary" @click="showEmployee">员工详情</Button>
-                </h3>
-                <Row>
-                  <Col span="10">员工编号: {{viewData.Detail.employeeId}}</Col>
-                  <Col span="10">员工姓名: {{viewData.Detail.name}}</Col>
-                </Row>
-                <h3>员工上传照片</h3>
-                <Row>
-                  <Col span="4">订单到达照片</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Detail.arriveImg"
-                      class="img_item"
-                      preview="0"
-                      preview-text="订单到达照片"
-                    />
-                  </Col>
-                </Row>
-                <Row >
-                  <Col span="4">订单完成照片</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Detail.doneImg"
-                      class="img_item"
-                      preview="1"
-                      preview-text="订单完成照片"
-                    />
-                  </Col>
-                </Row>
+                <div
+                  v-if="
+                    viewData.Detail.employeeId !== 0 &&
+                    viewData.Detail.orderStatus !== 0 &&
+                    viewData.Detail.orderStatus !== 1
+                  "
+                >
+                  <h3>
+                    员工信息
+                    <Button
+                      style="margin-left: 10px"
+                      type="primary"
+                      @click="showEmployee"
+                      >员工详情</Button
+                    >
+                  </h3>
+                  <Row>
+                    <Col span="10"
+                      >员工编号: {{ viewData.Detail.employeeId }}</Col
+                    >
+                    <Col span="10">员工姓名: {{ viewData.Detail.name }}</Col>
+                  </Row>
+                  <h3>员工上传照片</h3>
+                  <Row>
+                    <Col span="4">订单到达照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.arriveImg"
+                        class="img_item"
+                        preview="0"
+                        preview-text="订单到达照片"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="4">订单完成照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.doneImg"
+                        class="img_item"
+                        preview="1"
+                        preview-text="订单完成照片"
+                      />
+                    </Col>
+                  </Row>
                 </div>
               </div>
             </Modal>
             <Modal
               title="查看员工信息详情"
               width="55"
-              :styles="{top: '70px'}"
+              :styles="{ top: '70px' }"
               v-model="viewData.modalEmployee"
             >
               <div class="order_info">
                 <h3>用户信息</h3>
                 <Row>
-                  <Col span="10">用户id: {{viewData.Employee.id}}</Col>
-                  <Col span="10">身份: {{viewData.Employee.roleChina}}</Col>
+                  <Col span="10">用户id: {{ viewData.Employee.id }}</Col>
+                  <Col span="10">身份: {{ viewData.Employee.roleChina }}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">姓名: {{viewData.Employee.name}}</Col>
-                  <Col span="10">账号(电话): {{viewData.Employee.account}}</Col>
+                  <Col span="10">姓名: {{ viewData.Employee.name }}</Col>
+                  <Col span="10"
+                    >账号(电话): {{ viewData.Employee.account }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">性别: {{viewData.Employee.idcGender}}</Col>
-                  <Col span="10">身份证号: {{viewData.Employee.idcId}}</Col>
+                  <Col span="10">性别: {{ viewData.Employee.idcGender }}</Col>
+                  <Col span="10">身份证号: {{ viewData.Employee.idcId }}</Col>
                 </Row>
-                <h4>身份证地址: {{viewData.Employee.idcAddr}}</h4>
+                <h4>身份证地址: {{ viewData.Employee.idcAddr }}</h4>
                 <Row>
-                  <Col span="10">审核状态: {{viewData.Employee.statusChina}}</Col>
-                  <Col span="10">接单模式: {{viewData.Employee.orderModelChina}}</Col>
+                  <Col span="10"
+                    >审核状态: {{ viewData.Employee.statusChina }}</Col
+                  >
+                  <Col span="10"
+                    >接单模式: {{ viewData.Employee.orderModelChina }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">加入时间: {{viewData.Employee.createTime}}</Col>
-                  <Col span="10">邀请码: {{viewData.Employee.empInvCode}}</Col>
+                  <Col span="10"
+                    >加入时间: {{ viewData.Employee.createTime }}</Col
+                  >
+                  <Col span="10"
+                    >邀请码: {{ viewData.Employee.empInvCode }}</Col
+                  >
                 </Row>
-                <Row v-if="viewData.Employee.role===2">
-                  <Col span="10">合伙人期限: {{viewData.Employee.payRentDate}}</Col>
+                <Row v-if="viewData.Employee.role === 2">
+                  <Col span="10"
+                    >合伙人期限: {{ viewData.Employee.payRentDate }}</Col
+                  >
                 </Row>
                 <h3>钱包信息</h3>
                 <Row>
-                  <Col span="10">推广收入: {{viewData.Employee.awardTotal}}元</Col>
-                  <Col span="10">订单总收入: {{viewData.Employee.earningTotal}}元</Col>
+                  <Col span="10"
+                    >推广收入: {{ viewData.Employee.awardTotal }}元</Col
+                  >
+                  <Col span="10"
+                    >订单总收入: {{ viewData.Employee.earningTotal }}元</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">余额: {{viewData.Employee.balance}}元</Col>
-                  <Col span="10">可提现金额: {{viewData.Employee.desirableBalance}}元</Col>
+                  <Col span="10">余额: {{ viewData.Employee.balance }}元</Col>
+                  <Col span="10"
+                    >可提现金额: {{ viewData.Employee.desirableBalance }}元</Col
+                  >
                 </Row>
                 <h3>身份证照片</h3>
                 <Row>
@@ -353,8 +422,12 @@
               </div>
             </Modal>
           </Form>
-          <Form-item style="padding-top: 10px;">
-            <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
+          <Form-item style="padding-top: 10px">
+            <i-table
+              border
+              :columns="searchList.columns"
+              :data="searchList.pageData.content"
+            ></i-table>
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
@@ -758,6 +831,16 @@ export default {
             value: 3,
             label: '不接受派单'
           }
+        ],
+        yhqList: [
+          {
+            value: 0,
+            label: '未使用'
+          },
+          {
+            value: 1,
+            label: '使用优惠券'
+          }
         ]
       }
     }
@@ -927,10 +1010,11 @@ export default {
           params: {
             page: this.searchList.searchCondition.page,
             orderId: this.searchList.searchCondition.orderId,
-            contactName: this.searchList.searchCondition.contactName,
+            contactMobile: this.searchList.searchCondition.contactMobile,
             yyDate: this.searchList.searchCondition.yyDate,
             order: this.searchList.searchCondition.order,
-            orderStatus: this.searchList.searchCondition.orderStatus
+            orderStatus: this.searchList.searchCondition.orderStatus,
+            discountType: this.searchList.searchCondition.discountType
           }
         })
         .then((res) => {

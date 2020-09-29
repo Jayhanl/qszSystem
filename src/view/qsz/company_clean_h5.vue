@@ -12,8 +12,8 @@
                 clearable
                 placeholder="订单ID"
               ></Input>
-              <!-- <Input class="search_item" type="text" v-model="searchList.searchCondition.contactName" clearable
-              placeholder="客户姓名"></Input>-->
+              <Input class="search_item" type="text" v-model="searchList.searchCondition.contactMobile" clearable
+              placeholder="客户姓名"></Input>
               <Select
                 clearable
                 placeholder="状态"
@@ -461,7 +461,7 @@ export default {
           params: {
             page: this.searchList.searchCondition.page,
             orderId: this.searchList.searchCondition.orderId,
-            contactName: this.searchList.searchCondition.contactName,
+            contactMobile: this.searchList.searchCondition.contactMobile,
             orderStatus: this.searchList.searchCondition.orderStatus
           }
         })
