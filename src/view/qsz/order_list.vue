@@ -236,6 +236,108 @@
                 </Form-item>
               </Form>
             </Modal>
+
+            <Modal
+              v-model="viewData.modalEdit"
+              title="编辑订单"
+              :mask-closable="false"
+              @on-ok="onEditBtn"
+              width="35"
+              @on-cancel="onModelCancel"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item" label="联系人:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.contactName"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="联系人"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="联系电话:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.contactMobile"
+                    type="text"
+                    :maxlength="11"
+                    placeholder="联系电话"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单价格:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.orderPrice"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="订单价格"
+                  ></Input>
+                </Form-item>
+                <!-- <Form-item class="form_item" label="服务时长:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Edit.serviceNum"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="服务时长"
+                  ></Input>
+                </Form-item> -->
+                <Form-item class="form_item" label="预约日期:">
+                  <Date-picker
+                    style="width: 200px"
+                    type="date"
+                    placeholder="预约日期"
+                    @on-change="
+                      (datetime) => {
+                        this.viewData.Edit.yyDate = datetime
+                      }
+                    "
+                    v-model="viewData.Edit.yyDate"
+                  ></Date-picker>
+                </Form-item>
+                <Form-item class="form_item" label="预约时间:">
+                  <InputNumber
+                    :max="20"
+                    :min="9"
+                    v-model="viewData.Edit.yyTime"
+                  ></InputNumber>
+                </Form-item>
+                <Form-item class="form_item" label="选择社区:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Sq.name"
+                    disabled
+                    placeholder="请选择社区"
+                  ></Input>
+                  <Button
+                    type="success"
+                    style="margin-left: 10px"
+                    @click="showSq"
+                    >选择</Button
+                  >
+                </Form-item>
+                <Form-item class="form_item" label="楼层单元:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Edit.addr"
+                    type="textarea"
+                    :rows="2"
+                    :maxlength="200"
+                    placeholder="请填写所在小区的楼层单元"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单备注:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Edit.orderExplain"
+                    type="textarea"
+                    :rows="4"
+                    :maxlength="500"
+                    placeholder="订单备注"
+                  ></Input>
+                </Form-item>
+              </Form>
+            </Modal>
             <Modal
               :mask-closable="false"
               title="选择社区"
@@ -275,7 +377,7 @@
                 class="search_item"
                 v-model="searchList.searchCondition2.county"
                 placeholder="请选择区县"
-                @on-change="searchManage2"
+                @on-change="searchPageReturn2"
               >
                 <Option
                   v-for="item in countyArr"
@@ -301,26 +403,6 @@
                 size="small"
                 show-total
               ></Page>
-            </Modal>
-            <Modal
-              :mask-closable="false"
-              title="修改订单备注"
-              width="500"
-              v-model="viewData.modalRemark"
-              @on-ok="onRemark()"
-            >
-              <Form :label-width="80">
-                <Form-item class="form_item" label="订单备注:">
-                  <Input
-                    style="width: 300px"
-                    v-model="viewData.Confirm.orderExplain"
-                    type="textarea"
-                    :row="4"
-                    :maxlength="500"
-                    placeholder="请输入订单备注"
-                  ></Input>
-                </Form-item>
-              </Form>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -369,6 +451,26 @@
               确认订单id：
               <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               已到达吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="取消接单员"
+              width="400"
+              v-model="viewData.modalCancelEmp"
+              @on-ok="onCancelEmp()"
+            >
+            <div style="margin-bottom:20px;">
+              确认取消订单id：
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span
+              >的接单员接单吗？</div>
+              <Form-item class="form_item" label="取消原因:">
+                <Input
+                  style="width: 200px"
+                  v-model="viewData.Confirm.reason"
+                  type="text"
+                  placeholder="请输入取消原因"
+                ></Input>
+              </Form-item>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -530,7 +632,9 @@
                   :key="item.serviceId"
                 >
                   <Col span="10">服务名: {{ item.serviceName }}</Col>
-                  <Col span="10">单位: {{ item.num? item.num + item.unit : '不限时'}}</Col>
+                  <Col span="10"
+                    >单位: {{ item.num ? item.num + item.unit : '不限时' }}</Col
+                  >
                 </Row>
                 <Row>
                   <Col span="10">预约日期: {{ viewData.Detail.yyDate }}</Col>
@@ -778,7 +882,7 @@ export default {
           {
             title: '操作',
             key: 'action',
-            width: 160,
+            width: 180,
             align: 'center',
             render: (h, params) => {
               const arr = [
@@ -809,11 +913,11 @@ export default {
                     },
                     on: {
                       click: () => {
-                        this.showRemark(params.row)
+                        this.showEdit(params.row)
                       }
                     }
                   },
-                  '修改备注'
+                  '编辑'
                 )
               ]
               if (params.row.orderStatus === 0) {
@@ -880,6 +984,9 @@ export default {
                         type: 'primary',
                         size: 'small'
                       },
+                      style: {
+                        marginRight: '15px'
+                      },
                       on: {
                         click: () => {
                           this.showTogo(params.row)
@@ -887,6 +994,21 @@ export default {
                       }
                     },
                     '上门'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showCancel(params.row)
+                        }
+                      }
+                    },
+                    '取消接单员'
                   )
                 )
               } else if (params.row.orderStatus === 3) {
@@ -1099,12 +1221,15 @@ export default {
         Confirm: {},
         Dispatch: {},
         Add: {},
+        Edit: {},
         Sq: {},
         modalAdd: false,
+        modalCancel: false,
+        modalCancelEmp: false,
         modalSq: false,
         modalDelete: false,
         modalDetail: false,
-        modalRemark: false,
+        modalEdit: false,
         modalEmployee: false,
         modalDispatch: false,
         modalDispatch1: false,
@@ -1266,23 +1391,40 @@ export default {
       this.viewData.Sq = row
       this.viewData.modalSq = false
     },
-    onRemark () {
-      if (!this.viewData.Confirm.orderExplain) {
-        this.$Message.error('订单备注不能为空')
-        return false
-      }
+    onEditBtn () {
+      const sq = this.viewData.Sq
+      this.$Message.warning('上传中，请稍后...')
       axios
         .put(
           '/qsz_pf/order/update',
           qs.stringify({
-            id: this.viewData.Confirm.id,
-            orderExplain: this.viewData.Confirm.orderExplain
+            id: this.viewData.Edit.id,
+            // serviceNum: this.viewData.Edit.serviceNum,
+            contactName: this.viewData.Edit.contactName,
+            contactMobile: this.viewData.Edit.contactMobile,
+            contactAddr:
+              sq.province +
+              ',' +
+              sq.city +
+              ',' +
+              sq.county +
+              ',' +
+              sq.name +
+              ',' +
+              this.viewData.Edit.addr,
+            lat: sq.lat,
+            lng: sq.lng,
+            yyDate: this.formatTime(this.viewData.Edit.yyDate, 'year'),
+            yyTime: this.viewData.Edit.yyTime,
+            orderPrice: this.viewData.Edit.orderPrice,
+            orderExplain: this.viewData.Edit.orderExplain
           })
         )
         .then((response) => {
-          this.viewData.Confirm = {}
-          this.$Message.success('操作成功!')
+          this.viewData.Sq = {}
+          this.viewData.Edit = {}
           this.searchManage()
+          this.$Message.success('编辑成功!')
         })
     },
     onAddBtn () {
@@ -1295,7 +1437,16 @@ export default {
             serviceNum: this.viewData.Add.serviceNum,
             contactName: this.viewData.Add.contactName,
             contactMobile: this.viewData.Add.contactMobile,
-            contactAddr: sq.province + ',' + sq.city + ',' + sq.county + ',' + sq.name + ',' + this.viewData.Add.addr,
+            contactAddr:
+              sq.province +
+              ',' +
+              sq.city +
+              ',' +
+              sq.county +
+              ',' +
+              sq.name +
+              ',' +
+              this.viewData.Add.addr,
             lat: sq.lat,
             lng: sq.lng,
             yyDate: this.viewData.Add.yyDate,
@@ -1371,6 +1522,22 @@ export default {
           this.searchManage()
         })
     },
+    onCancelEmp () {
+      axios
+        .put(
+          '/qsz_pf/order/cancel_emp',
+          qs.stringify({
+            id: this.viewData.Confirm.id,
+            reason: this.viewData.Confirm.reason || ''
+          })
+        )
+        .then((response) => {
+          this.viewData.modalCancelEmp = false
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
     onExcel () {
       const startDate = this.viewData.Confirm.startDate || this.viewData.dateNow
       const endDate = this.viewData.Confirm.endDate || this.viewData.dateNow
@@ -1399,10 +1566,23 @@ export default {
       this.viewData.id = row.id
       this.searchDetail()
     },
-    showRemark (row) {
-      this.viewData.modalRemark = true
+    showEdit (row) {
+      this.viewData.modalEdit = true
+      this.viewData.Edit = row
+      const addr = row.contactAddr.split(',')
+      this.viewData.Sq = {
+        province: addr[0],
+        city: addr[1],
+        county: addr[2],
+        name: addr[3],
+        lat: row.lat,
+        lng: row.lng
+      }
+      this.viewData.Edit.addr = addr[4]
+    },
+    showCancel (row) {
       this.viewData.Confirm = row
-      this.viewData.id = row.id
+      this.viewData.modalCancelEmp = true
     },
     showSq (row) {
       this.viewData.modalSq = true
