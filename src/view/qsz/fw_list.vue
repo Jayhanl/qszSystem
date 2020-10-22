@@ -5,7 +5,7 @@
         <Form-item>
           <Form inline>
             <Form-item>
-              <Button style="margin-right:10px" @click="searchPageReturn">
+              <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="20" type="ios-search" />
               </Button>
               <Button icon="md-add" @click="showAdd()">增加</Button>
@@ -17,7 +17,7 @@
               @on-ok="onDeleteBtn"
             >
               确认删除
-              <span style="color:red">{{viewData.Delete.serviceName}}</span>
+              <span style="color: red">{{ viewData.Delete.serviceName }}</span>
               服务项目吗？
               <!-- <p>(*删除后将会把服务项目下的所有需求隐藏！)</p> -->
             </Modal>
@@ -56,6 +56,20 @@
                     :maxlength="10"
                     placeholder="服务价格"
                   ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务类型:">
+                  <Select
+                    placeholder="服务类型"
+                    v-model="viewData.Add.serviceType"
+                    class="search_item"
+                  >
+                    <Option
+                      v-for="item in viewData.fwList"
+                      :value="item.value"
+                      :key="item.value"
+                      >{{ item.label }}</Option
+                    >
+                  </Select>
                 </Form-item>
                 <Form-item class="form_item" label="服务备注:">
                   <Input
@@ -114,6 +128,20 @@
                     placeholder="服务价格"
                   ></Input>
                 </Form-item>
+                <Form-item class="form_item" label="服务类型:">
+                  <Select
+                    placeholder="服务类型"
+                    v-model="viewData.Edit.serviceType"
+                    class="search_item"
+                  >
+                    <Option
+                      v-for="item in viewData.fwList"
+                      :value="item.value"
+                      :key="item.value"
+                      >{{ item.label }}</Option
+                    >
+                  </Select>
+                </Form-item>
                 <Form-item class="form_item" label="服务备注:">
                   <Input
                     style="width: 200px"
@@ -135,8 +163,12 @@
               </Form>
             </Modal>
           </Form>
-          <Form-item style="padding-top: 10px;">
-            <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
+          <Form-item style="padding-top: 10px">
+            <i-table
+              border
+              :columns="searchList.columns"
+              :data="searchList.pageData.content"
+            ></i-table>
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
@@ -183,6 +215,17 @@ export default {
             key: 'servicePrice',
             render: (h, params) => {
               return h('span', params.row.servicePrice + '元')
+            }
+          },
+          {
+            title: '服务类型',
+            align: 'center',
+            key: 'serviceType',
+            render: (h, params) => {
+              return h(
+                'span',
+                params.row.serviceType === 1 ? '家政清洁' : '钟点保姆'
+              )
             }
           },
           {
@@ -301,6 +344,16 @@ export default {
           serviceName: '',
           listOrder: ''
         },
+        fwList: [
+          {
+            value: 1,
+            label: '家政清洁'
+          },
+          {
+            value: 2,
+            label: '钟点保姆'
+          }
+        ],
         ImgSrc: '',
         pList: [],
         modalEdit: false,
@@ -340,6 +393,7 @@ export default {
           qs.stringify({
             serviceName: this.viewData.Add.serviceName,
             servicePrice: this.viewData.Add.servicePrice,
+            serviceType: this.viewData.Add.serviceType,
             tips: this.viewData.Add.tips || '',
             unit: this.viewData.Add.unit,
             listOrder: this.viewData.Add.listOrder
@@ -364,6 +418,7 @@ export default {
             id: this.viewData.Edit.id,
             serviceName: this.viewData.Edit.serviceName,
             servicePrice: this.viewData.Edit.servicePrice,
+            serviceType: this.viewData.Edit.serviceType,
             tips: this.viewData.Edit.tips || '',
             unit: this.viewData.Edit.unit,
             listOrder: this.viewData.Edit.listOrder

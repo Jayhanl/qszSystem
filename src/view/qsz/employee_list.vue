@@ -30,7 +30,8 @@
                   v-for="item in viewData.statusList"
                   :value="item.value"
                   :key="item.value"
-                >{{ item.label }}</Option>
+                  >{{ item.label }}</Option
+                >
               </Select>
               <Select
                 clearable
@@ -43,7 +44,8 @@
                   v-for="item in viewData.roleList"
                   :value="item.value"
                   :key="item.value"
-                >{{ item.label }}</Option>
+                  >{{ item.label }}</Option
+                >
               </Select>
               <!-- <Select
                 clearable
@@ -60,7 +62,7 @@
               </Select> -->
             </Form-item>
             <Form-item>
-              <Button style="margin-right:10px" @click="searchPageReturn">
+              <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
               <!-- <Button icon="md-add" @click="showCollect()">增加</Button> -->
@@ -75,7 +77,7 @@
               <Form :label-width="80">
                 <Form-item class="form_item">
                   确认拒绝用户id：
-                  <span style="color:red">{{viewData.Confirm.id}}</span>
+                  <span style="color: red">{{ viewData.Confirm.id }}</span>
                   的审核吗？
                 </Form-item>
                 <Form-item class="form_item" label="拒绝原因:">
@@ -96,13 +98,32 @@
               @on-ok="onAuditBtn(1)"
             >
               确认通过用户id：
-              <span style="color:red">{{viewData.Confirm.id}}</span>
+              <span style="color: red">{{ viewData.Confirm.id }}</span>
               的审核吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="合伙人到期时间"
+              width="400"
+              v-model="viewData.modalTime"
+              @on-ok="onTimeBtn()"
+            >
+              <Date-picker
+                style="width: 200px"
+                type="date"
+                placeholder="到期时间"
+                @on-change="
+                  (datetime) => {
+                    this.viewData.Confirm.payRentDate = datetime
+                  }
+                "
+                v-model="viewData.Confirm.payRentDate"
+              ></Date-picker>
             </Modal>
 
             <Modal
               :mask-closable="false"
-              :title="viewData.Detail.name+'的考勤记录'"
+              :title="viewData.Detail.name + '的考勤记录'"
               width="60"
               v-model="viewData.modalChecking"
               @on-ok="searchChecking()"
@@ -113,14 +134,18 @@
                     class="search_item"
                     type="date"
                     placeholder="查询日期"
-                    @on-change="(datetime) =>{ this.searchList.searchCondition1.date = datetime}"
+                    @on-change="
+                      (datetime) => {
+                        this.searchList.searchCondition1.date = datetime
+                      }
+                    "
                     v-model="searchList.searchCondition.date"
                   ></Date-picker>
-                  <Button style="margin-right:10px" @click="searchPageReturn1">
+                  <Button style="margin-right: 10px" @click="searchPageReturn1">
                     <Icon size="18" type="ios-search" />
                   </Button>
                 </Form-item>
-                <Form-item style="padding-top: 10px;">
+                <Form-item style="padding-top: 10px">
                   <i-table
                     border
                     :columns="searchList.columns1"
@@ -142,67 +167,96 @@
             <Modal
               title="查看员工信息详情"
               width="55"
-              :styles="{top: '70px'}"
+              :styles="{ top: '70px' }"
               v-model="viewData.modalDetail"
             >
               <div class="order_info">
                 <h3>用户信息</h3>
                 <Row>
-                  <Col span="10">用户id: {{viewData.Detail.id}}</Col>
-                  <Col span="10">身份: {{viewData.Detail.roleChina}}</Col>
+                  <Col span="10">用户id: {{ viewData.Detail.id }}</Col>
+                  <Col span="10">身份: {{ viewData.Detail.roleChina }}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">姓名: {{viewData.Detail.name}}</Col>
-                  <Col span="10">账号(电话): {{viewData.Detail.account}}</Col>
+                  <Col span="10">姓名: {{ viewData.Detail.name }}</Col>
+                  <Col span="10">账号(电话): {{ viewData.Detail.account }}</Col>
                 </Row>
                 <Row>
-                  <Col span="10">性别: {{viewData.Detail.idcGender}}</Col>
-                  <Col span="10">身份证号: {{viewData.Detail.idcId}}</Col>
+                  <Col span="10">性别: {{ viewData.Detail.idcGender }}</Col>
+                  <Col span="10">身份证号: {{ viewData.Detail.idcId }}</Col>
                 </Row>
-                <h4>身份证地址: {{viewData.Detail.idcAddr}}</h4>
+                <h4>身份证地址: {{ viewData.Detail.idcAddr }}</h4>
                 <Row>
-                  <Col span="10">审核状态: {{viewData.Detail.statusChina}}</Col>
-                  <Col span="10">接单模式: {{viewData.Detail.orderModelChina}}</Col>
+                  <Col span="10"
+                    >审核状态: {{ viewData.Detail.statusChina }}</Col
+                  >
+                  <Col span="10"
+                    >接单模式: {{ viewData.Detail.orderModelChina }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
-                  <Col span="10">邀请码: {{viewData.Detail.empInvCode}}</Col>
+                  <Col span="10"
+                    >加入时间: {{ viewData.Detail.createTime }}</Col
+                  >
+                  <Col span="10">邀请码: {{ viewData.Detail.empInvCode }}</Col>
                 </Row>
-                <Row v-if="viewData.Detail.role===2">
-                  <Col span="10">合伙人期限: {{viewData.Detail.payRentDate}}</Col>
+                <Row v-if="viewData.Detail.role === 2">
+                  <Col span="10"
+                    >合伙人期限: {{ viewData.Detail.payRentDate }}</Col
+                  >
                 </Row>
                 <h3>钱包信息</h3>
                 <Row>
-                  <Col span="10">推广收入: {{viewData.Detail.awardTotal}}元</Col>
-                  <Col span="10">订单总收入: {{viewData.Detail.earningTotal}}元</Col>
+                  <Col span="10"
+                    >推广收入: {{ viewData.Detail.awardTotal }}元</Col
+                  >
+                  <Col span="10"
+                    >订单总收入: {{ viewData.Detail.earningTotal }}元</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">余额: {{viewData.Detail.balance}}元</Col>
-                  <Col span="10">可提现金额: {{viewData.Detail.desirableBalance}}元</Col>
+                  <Col span="10">余额: {{ viewData.Detail.balance }}元</Col>
+                  <Col span="10"
+                    >可提现金额: {{ viewData.Detail.desirableBalance }}元</Col
+                  >
                 </Row>
-                <h3>身份证照片</h3>
-                <Row>
-                  <Col span="4">身份证人像面</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Detail.idcFront"
-                      class="img_item"
-                      preview="0"
-                      preview-text="身份证人像面"
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span="4">身份证国徽面</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Detail.idcBack"
-                      class="img_item"
-                      preview="1"
-                      preview-text="身份证国徽面"
-                    />
-                  </Col>
-                </Row>
+                <div v-if="viewData.Detail.isMainland">
+                  <h3>身份证照片</h3>
+                  <Row>
+                    <Col span="4">身份证人像面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.idcFront"
+                        class="img_item"
+                        preview="0"
+                        preview-text="身份证人像面"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="4">身份证国徽面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.idcBack"
+                        class="img_item"
+                        preview="1"
+                        preview-text="身份证国徽面"
+                      />
+                    </Col>
+                  </Row>
+                </div>
+                <div v-else-if="viewData.Detail.selfie">
+                  <Row>
+                    <Col span="4">本人真实照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.selfie"
+                        class="img_item"
+                        preview="2"
+                        preview-text="本人真实照片"
+                      />
+                    </Col>
+                  </Row>
+                </div>
               </div>
             </Modal>
             <Modal
@@ -212,12 +266,16 @@
               @on-ok="onDeleteBtn"
             >
               确认删除id为：
-              <span style="color:red">{{viewData.Delete.id}}</span>
+              <span style="color: red">{{ viewData.Delete.id }}</span>
               的信息吗？
             </Modal>
           </Form>
-          <Form-item style="padding-top: 10px;">
-            <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
+          <Form-item style="padding-top: 10px">
+            <i-table
+              border
+              :columns="searchList.columns"
+              :data="searchList.pageData.content"
+            ></i-table>
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
@@ -284,6 +342,16 @@ export default {
             key: 'roleChina'
           },
           {
+            title: '合伙人到期时间',
+            align: 'center',
+            render: (h, params) => {
+              return h(
+                'span',
+                params.row.role === 2 ? params.row.payRentDate : ''
+              )
+            }
+          },
+          {
             title: '操作',
             key: 'action',
             width: 200,
@@ -327,6 +395,28 @@ export default {
                   '考勤'
                 )
               ]
+              if (params.row.status > 1 && params.row.role === 2) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'success',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showTime(params.row)
+                        }
+                      }
+                    },
+                    '修改到期时间'
+                  )
+                )
+              }
               if (params.row.status === 1) {
                 arr.push(
                   h(
@@ -363,8 +453,7 @@ export default {
                     '拒绝审核'
                   )
                 )
-              } else
-              if (params.row.status === -1) {
+              } else if (params.row.status === -1) {
                 arr.push(
                   h(
                     'Button',
@@ -452,6 +541,7 @@ export default {
         modalDetail: false,
         modalRefuse: false,
         modalPass: false,
+        modalTime: false,
         Confirm: {},
         Detail: {},
         Delete: {},
@@ -539,6 +629,10 @@ export default {
       this.viewData.Confirm = item
       this.viewData.modalPass = true
     },
+    showTime (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalTime = true
+    },
     showRefuse (item) {
       this.viewData.Confirm = item
       this.viewData.modalRefuse = true
@@ -549,6 +643,18 @@ export default {
           id: this.viewData.Confirm.id,
           isPass: status,
           reason: status ? '' : this.viewData.Confirm.reason
+        })
+        .then((response) => {
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
+    onTimeBtn (status) {
+      axios
+        .put('/qsz_pf/employee/update', {
+          id: this.viewData.Confirm.id,
+          payRentDate: this.viewData.Confirm.payRentDate
         })
         .then((response) => {
           this.viewData.Confirm = {}

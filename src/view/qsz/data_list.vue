@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="data_grid">
-      <div class="item" :style="'border-left:8px solid '+colorList[0]">
-        <Icon style="padding:0 20px" size="50" type="ios-contacts-outline" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[0]">
+        <Icon style="padding: 0 20px" size="50" type="ios-contacts-outline" />
         <div class="info">
           <span>用户总数</span>
-          <span class="num">{{dataList.allUser}}</span>
+          <span class="num">{{ dataList.allUser }}</span>
         </div>
       </div>
       <!-- <div class="item" :style="'border-left:8px solid '+colorList[1]">
@@ -15,53 +15,57 @@
         <span class="num">{{dataList.registerUser}}</span>
       </div>
       </div>-->
-      <div class="item" :style="'border-left:8px solid '+colorList[2]">
-        <Icon style="padding:0 20px" size="50" type="ios-people-outline" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[2]">
+        <Icon style="padding: 0 20px" size="50" type="ios-people-outline" />
         <div class="info">
           <span>合伙人</span>
-          <span class="num">{{dataList.partner}}</span>
+          <span class="num">{{ dataList.partner }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[3]">
-        <Icon style="padding:0 20px" size="50" type="ios-people" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[3]">
+        <Icon style="padding: 0 20px" size="50" type="ios-people" />
         <div class="info">
           <span>员工</span>
-          <span class="num">{{dataList.employee}}</span>
+          <span class="num">{{ dataList.employee }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[4]">
-        <Icon style="padding:0 20px" size="50" type="md-clipboard" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[4]">
+        <Icon style="padding: 0 20px" size="50" type="md-clipboard" />
         <div class="info">
           <span>订单总量</span>
-          <span class="num">{{dataList.allOrder}}</span>
+          <span class="num">{{ dataList.allOrder }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[5]">
-        <Icon style="padding:0 20px" size="50" type="md-checkmark-circle-outline" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[5]">
+        <Icon
+          style="padding: 0 20px"
+          size="50"
+          type="md-checkmark-circle-outline"
+        />
         <div class="info">
           <span>已完成订单</span>
-          <span class="num">{{dataList.doneOrder}}</span>
+          <span class="num">{{ dataList.doneOrder }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[1]">
-        <Icon style="padding:0 20px" size="50" type="md-clipboard" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[1]">
+        <Icon style="padding: 0 20px" size="50" type="md-clipboard" />
         <div class="info">
           <span>今日订单量</span>
-          <span class="num">{{dataList.todayOrder}}</span>
+          <span class="num">{{ dataList.todayOrder }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[6]">
-        <Icon style="padding:0 20px" size="50" type="md-people" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[6]">
+        <Icon style="padding: 0 20px" size="50" type="md-people" />
         <div class="info">
           <span>当前上班师傅人数</span>
-          <span class="num">{{todayList.length}}</span>
+          <span class="num">{{ todayList.length }}</span>
         </div>
       </div>
-      <div class="item" :style="'border-left:8px solid '+colorList[2]">
-        <Icon style="padding:0 20px" size="50" type="md-people" />
+      <div class="item" :style="'border-left:8px solid ' + colorList[2]">
+        <Icon style="padding: 0 20px" size="50" type="md-people" />
         <div class="info">
           <span>当前空闲师傅人数</span>
-          <span class="num">{{todayData.isFreeTotal}}</span>
+          <span class="num">{{ todayData.isFreeTotal }}</span>
         </div>
       </div>
     </div>
@@ -74,16 +78,16 @@
           :key="item.id"
           @click="showDetail(item.id)"
         >
-          <div class="info">{{index+1+'、'+item.name}}</div>
+          <div class="info">{{ index + 1 + '、' + item.name }}</div>
           <div class="num">
-            {{item.todayOrder}}
-            <span style="font-size:12px">单</span>
+            {{ item.todayOrder }}
+            <span style="font-size: 12px">单</span>
           </div>
         </div>
       </div>
       <div class="rankList">
         <div class="title">空闲人数占比</div>
-        <div style="text-align: center;">
+        <div style="text-align: center">
           <Circle
             :size="250"
             :trail-width="4"
@@ -93,27 +97,27 @@
             stroke-color="#43a3fb"
           >
             <div class="demo-Circle-custom">
-              <h1>{{todayData.isFreeTotal}}</h1>
+              <h1>{{ todayData.isFreeTotal }}</h1>
               <p>空闲人数</p>
               <span>
                 总占人数
-                <i>{{proportion}}%</i>
+                <i>{{ proportion }}%</i>
               </span>
             </div>
           </Circle>
         </div>
       </div>
-      <div class="rankList" style="justify-items: end;">
+      <div class="rankList" style="justify-items: end">
         <div class="title">师傅区域分布</div>
         <div class="item" v-for="item in countyList" :key="item.id">
-          <div class="info">{{item.text}}</div>
+          <div class="info">{{ item.text }}</div>
           <div class="num">
-            {{countyTotal[item.id]}}
-            <span style="font-size:12px">人</span>
+            {{ countyTotal[item.id] }}
+            <span style="font-size: 12px">人</span>
           </div>
         </div>
       </div>
-      <div class="rankList" style="justify-items: end;">
+      <div class="rankList" style="justify-items: end">
         <div class="title">订单总量排行榜</div>
         <div
           class="item"
@@ -121,64 +125,96 @@
           :key="item.id"
           @click="showDetail(item.id)"
         >
-          <div class="info">{{index+1+'、'+item.name}}</div>
+          <div class="info">{{ index + 1 + '、' + item.name }}</div>
           <div class="num">
-            {{item.orderTotal}}
-            <span style="font-size:12px">单</span>
+            {{ item.orderTotal }}
+            <span style="font-size: 12px">单</span>
           </div>
         </div>
       </div>
     </div>
 
-    <Modal title="查看用户信息详情" width="55" :styles="{top: '70px'}" v-model="viewData.modalDetail">
+    <Modal
+      title="查看用户信息详情"
+      width="55"
+      :styles="{ top: '70px' }"
+      v-model="viewData.modalDetail"
+    >
       <div class="order_info">
         <h3>用户信息</h3>
         <Row>
-          <Col span="10">用户id: {{viewData.Detail.id}}</Col>
-          <Col span="10">身份: {{viewData.Detail.roleChina}}</Col>
+          <Col span="10">用户id: {{ viewData.Detail.id }}</Col>
+          <Col span="10">身份: {{ viewData.Detail.roleChina }}</Col>
         </Row>
         <Row>
-          <Col span="10">姓名: {{viewData.Detail.name}}</Col>
-          <Col span="10">账号(电话): {{viewData.Detail.account}}</Col>
+          <Col span="10">姓名: {{ viewData.Detail.name }}</Col>
+          <Col span="10">账号(电话): {{ viewData.Detail.account }}</Col>
         </Row>
         <Row>
-          <Col span="10">性别: {{viewData.Detail.idcGender}}</Col>
-          <Col span="10">身份证号: {{viewData.Detail.idcId}}</Col>
+          <Col span="10">性别: {{ viewData.Detail.idcGender }}</Col>
+          <Col span="10">身份证号: {{ viewData.Detail.idcId }}</Col>
         </Row>
-        <h4>身份证地址: {{viewData.Detail.idcAddr}}</h4>
+        <h4>身份证地址: {{ viewData.Detail.idcAddr }}</h4>
         <Row>
-          <Col span="10">审核状态: {{viewData.Detail.statusChina}}</Col>
-          <Col span="10">接单模式: {{viewData.Detail.orderModelChina}}</Col>
+          <Col span="10">审核状态: {{ viewData.Detail.statusChina }}</Col>
+          <Col span="10">接单模式: {{ viewData.Detail.orderModelChina }}</Col>
         </Row>
         <Row>
-          <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
-          <Col span="10">邀请码: {{viewData.Detail.empInvCode}}</Col>
+          <Col span="10">加入时间: {{ viewData.Detail.createTime }}</Col>
+          <Col span="10">邀请码: {{ viewData.Detail.empInvCode }}</Col>
         </Row>
-        <Row v-if="viewData.Detail.role===2">
-          <Col span="10">合伙人期限: {{viewData.Detail.payRentDate}}</Col>
+        <Row v-if="viewData.Detail.role === 2">
+          <Col span="10">合伙人期限: {{ viewData.Detail.payRentDate }}</Col>
         </Row>
         <h3>钱包信息</h3>
         <Row>
-          <Col span="10">推广收入: {{viewData.Detail.awardTotal}}元</Col>
-          <Col span="10">订单总收入: {{viewData.Detail.earningTotal}}元</Col>
+          <Col span="10">推广收入: {{ viewData.Detail.awardTotal }}元</Col>
+          <Col span="10">订单总收入: {{ viewData.Detail.earningTotal }}元</Col>
         </Row>
         <Row>
-          <Col span="10">余额: {{viewData.Detail.balance}}元</Col>
-          <Col span="10">可提现金额: {{viewData.Detail.desirableBalance}}元</Col>
+          <Col span="10">余额: {{ viewData.Detail.balance }}元</Col>
+          <Col span="10"
+            >可提现金额: {{ viewData.Detail.desirableBalance }}元</Col
+          >
         </Row>
-        <h3>身份证照片</h3>
-        <Row>
-          <Col span="4">身份证人像面</Col>
-          <Col span="18">
-            <img :src="viewData.Detail.idcFront" class="img_item" preview="0" preview-text="身份证人像面" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span="4">身份证国徽面</Col>
-          <Col span="18">
-            <img :src="viewData.Detail.idcBack" class="img_item" preview="1" preview-text="身份证国徽面" />
-          </Col>
-        </Row>
+        <div v-if="viewData.Detail.isMainland">
+          <h3>身份证照片</h3>
+          <Row>
+            <Col span="4">身份证人像面</Col>
+            <Col span="18">
+              <img
+                :src="viewData.Detail.idcFront"
+                class="img_item"
+                preview="0"
+                preview-text="身份证人像面"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span="4">身份证国徽面</Col>
+            <Col span="18">
+              <img
+                :src="viewData.Detail.idcBack"
+                class="img_item"
+                preview="1"
+                preview-text="身份证国徽面"
+              />
+            </Col>
+          </Row>
+        </div>
+        <div v-else-if="viewData.Detail.selfie">
+          <Row>
+            <Col span="4">本人真实照片</Col>
+            <Col span="18">
+              <img
+                :src="viewData.Detail.selfie"
+                class="img_item"
+                preview="2"
+                preview-text="本人真实照片"
+              />
+            </Col>
+          </Row>
+        </div>
       </div>
     </Modal>
   </div>
@@ -269,7 +305,9 @@ export default {
       },
       viewData: {
         modalDetail: false,
-        Detail: {}
+        Detail: {},
+        time1: '',
+        time2: ''
       }
     }
   },
@@ -376,8 +414,14 @@ export default {
   created () {
     this.searchManage()
     this.searchToday()
-    setInterval(this.searchManage, 21000)
-    setInterval(this.searchToday, 31000)
+  },
+  mounted () {
+    this.viewData.time1 = setInterval(this.searchManage, 21000)
+    this.viewData.time2 = setInterval(this.searchToday, 31000)
+  },
+  beforeDestroy () {
+    clearInterval(this.viewData.time1)
+    clearInterval(this.viewData.time2)
   }
 }
 </script>

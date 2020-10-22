@@ -35,5 +35,7 @@ export default {
   qsz_coupon_order: '优惠券订单',
   qsz_company_clean: '小程序办公保洁订单',
   qsz_company_clean_h5: 'h5办公保洁订单',
-  qsz_company_clean_yy: '办公保洁预约'
+  qsz_company_clean_yy: '办公保洁预约',
+  qsz_code_list: '生成二维码'
+
 }

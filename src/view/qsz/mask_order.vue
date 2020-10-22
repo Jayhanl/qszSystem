@@ -258,7 +258,7 @@ export default {
         pageSizeOpts: [1, 5, 10, 20, 30, 40]
       },
       viewData: {
-        goodsIId: '',
+        tabId: '0',
         Detail: '',
         Delete: {},
         Confirm: {},

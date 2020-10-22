@@ -82,7 +82,246 @@
               <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
+              <Button type="success" style="margin-right: 10px" @click="showAdd"
+                >创建订单</Button
+              >
+              <Button
+                type="warning"
+                style="margin-right: 10px"
+                @click="showExcel"
+                >导出Excel</Button
+              >
             </Form-item>
+            <Modal
+              :mask-closable="false"
+              title="导出excel"
+              width="400"
+              v-model="viewData.modalExcel"
+              @on-ok="onExcel()"
+            >
+              <div>不选则默认今天</div>
+              <Date-picker
+                class="search_item"
+                placeholder="开始日期"
+                type="date"
+                @on-change="
+                  (datetime) => {
+                    this.viewData.Confirm.startDate = datetime
+                  }
+                "
+                v-model="viewData.Confirm.startDate"
+              ></Date-picker>
+              <Date-picker
+                style="margin-top: 10px"
+                class="search_item"
+                type="date"
+                placeholder="结束日期"
+                @on-change="
+                  (datetime) => {
+                    this.viewData.Confirm.endDate = datetime
+                  }
+                "
+                v-model="viewData.Confirm.endDate"
+              ></Date-picker>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              width="400"
+              :title="viewData.fileName"
+              v-model="viewData.modalDown"
+            >
+              <a ref="file" :href="viewData.file" :download="viewData.fileName"
+                >点此下载excel</a
+              >
+            </Modal>
+
+            <Modal
+              v-model="viewData.modalAdd"
+              title="创建订单"
+              :mask-closable="false"
+              @on-ok="onAddBtn"
+              width="35"
+              @on-cancel="onModelCancel"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item" label="联系人:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.contactName"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="联系人"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="联系电话:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.contactMobile"
+                    type="text"
+                    :maxlength="11"
+                    placeholder="联系电话"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单价格:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.orderPrice"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="订单价格"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务时长:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.serviceNum"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="服务时长"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="预约日期:">
+                  <Date-picker
+                    style="width: 200px"
+                    type="date"
+                    placeholder="预约日期"
+                    @on-change="
+                      (datetime) => {
+                        this.viewData.Add.yyDate = datetime
+                      }
+                    "
+                    v-model="viewData.Add.yyDate"
+                  ></Date-picker>
+                </Form-item>
+                <Form-item class="form_item" label="预约时间:">
+                  <InputNumber
+                    :max="20"
+                    :min="9"
+                    v-model="viewData.Add.yyTime"
+                  ></InputNumber>
+                </Form-item>
+                <Form-item class="form_item" label="选择社区:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Sq.name"
+                    disabled
+                    placeholder="请选择社区"
+                  ></Input>
+                  <Button
+                    type="success"
+                    style="margin-left: 10px"
+                    @click="showSq"
+                    >选择</Button
+                  >
+                </Form-item>
+                <Form-item class="form_item" label="楼层单元:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Add.addr"
+                    type="textarea"
+                    :rows="2"
+                    :maxlength="200"
+                    placeholder="请填写所在小区的楼层单元"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单备注:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Add.orderExplain"
+                    type="textarea"
+                    :rows="4"
+                    :maxlength="500"
+                    placeholder="订单备注"
+                  ></Input>
+                </Form-item>
+              </Form>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="选择社区"
+              width="60"
+              v-model="viewData.modalSq"
+            >
+              <Select
+                clearable
+                class="search_item"
+                v-model="searchList.searchCondition2.province"
+                placeholder="请选择省份"
+                @on-change="changeProvince"
+              >
+                <Option
+                  v-for="item in provinceArr"
+                  :key="item.value"
+                  :value="item.label"
+                  >{{ item.label }}</Option
+                >
+              </Select>
+              <Select
+                clearable
+                class="search_item"
+                v-model="searchList.searchCondition2.city"
+                placeholder="请选择城市"
+                @on-change="changeCity"
+              >
+                <Option
+                  v-for="item in citiesArr"
+                  :key="item.value"
+                  :value="item.label"
+                  >{{ item.label }}</Option
+                >
+              </Select>
+              <Select
+                clearable
+                class="search_item"
+                v-model="searchList.searchCondition2.county"
+                placeholder="请选择区县"
+                @on-change="searchManage2"
+              >
+                <Option
+                  v-for="item in countyArr"
+                  :key="item.value"
+                  :value="item.label"
+                  >{{ item.label }}</Option
+                >
+              </Select>
+              <Button style="margin-right: 10px" @click="searchPageReturn2">
+                <Icon size="20" type="ios-search" />
+              </Button>
+              <i-table
+                border
+                :columns="searchList.columns2"
+                :data="searchList.pageData2.content"
+              ></i-table>
+              <Page
+                style="padding-top: 10px"
+                :total="searchList.pageData2.total"
+                :current="searchList.searchCondition2.page"
+                :page-size="10"
+                @on-change="onPageChange2"
+                size="small"
+                show-total
+              ></Page>
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="修改订单备注"
+              width="500"
+              v-model="viewData.modalRemark"
+              @on-ok="onRemark()"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item" label="订单备注:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Confirm.orderExplain"
+                    type="textarea"
+                    :row="4"
+                    :maxlength="500"
+                    placeholder="请输入订单备注"
+                  ></Input>
+                </Form-item>
+              </Form>
+            </Modal>
             <Modal
               :mask-closable="false"
               title="取消确认"
@@ -260,7 +499,14 @@
                   <Col span="10"
                     >创建时间: {{ viewData.Detail.createTime }}</Col
                   >
-                  <Col span="10">下单时间: {{ viewData.Detail.payTime }}</Col>
+                  <Col span="10"
+                    >下单时间:
+                    {{
+                      viewData.Detail.userId === 0
+                        ? '后台创建订单'
+                        : viewData.Detail.payTime
+                    }}</Col
+                  >
                 </Row>
                 <h3>服务信息</h3>
                 <Row>
@@ -278,12 +524,13 @@
                   >
                 </Row>
                 <h4>详细地址: {{ viewData.Detail.contactAddr }}</h4>
+                <h4>订单备注: {{ viewData.Detail.orderExplain }}</h4>
                 <Row
                   v-for="item in viewData.Detail.serviceList"
                   :key="item.serviceId"
                 >
                   <Col span="10">服务名: {{ item.serviceName }}</Col>
-                  <Col span="10">单位: {{ item.num + item.unit }}</Col>
+                  <Col span="10">单位: {{ item.num? item.num + item.unit : '不限时'}}</Col>
                 </Row>
                 <Row>
                   <Col span="10">预约日期: {{ viewData.Detail.yyDate }}</Col>
@@ -396,29 +643,44 @@
                     >可提现金额: {{ viewData.Employee.desirableBalance }}元</Col
                   >
                 </Row>
-                <h3>身份证照片</h3>
-                <Row>
-                  <Col span="4">身份证人像面</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Employee.idcFront"
-                      class="img_item"
-                      preview="3"
-                      preview-text="身份证人像面"
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span="4">身份证国徽面</Col>
-                  <Col span="18">
-                    <img
-                      :src="viewData.Employee.idcBack"
-                      class="img_item"
-                      preview="4"
-                      preview-text="身份证国徽面"
-                    />
-                  </Col>
-                </Row>
+                <div v-if="viewData.Employee.isMainland">
+                  <h3>身份证照片</h3>
+                  <Row>
+                    <Col span="4">身份证人像面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.idcFront"
+                        class="img_item"
+                        preview="3"
+                        preview-text="身份证人像面"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="4">身份证国徽面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.idcBack"
+                        class="img_item"
+                        preview="4"
+                        preview-text="身份证国徽面"
+                      />
+                    </Col>
+                  </Row>
+                </div>
+                <div v-else-if="viewData.Employee.selfie">
+                  <Row>
+                    <Col span="4">本人真实照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.selfie"
+                        class="img_item"
+                        preview="5"
+                        preview-text="本人真实照片"
+                      />
+                    </Col>
+                  </Row>
+                </div>
               </div>
             </Modal>
           </Form>
@@ -446,21 +708,16 @@
 <script>
 import axios from 'axios'
 import qs from 'qs'
+import city from '@/libs/city'
 
 export default {
   data () {
     return {
-      formDynamic: {
-        index: 1,
-        items: [
-          {
-            key: '',
-            value: '',
-            index: 1,
-            status: 1
-          }
-        ]
-      },
+      provinceArr: city,
+      citiesArr: [],
+      countyArr: [],
+      citiesArr1: [],
+      countyArr1: [],
       searchList: {
         carList: [],
         categoryList: [],
@@ -542,6 +799,21 @@ export default {
                     }
                   },
                   '详情'
+                ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.showRemark(params.row)
+                      }
+                    }
+                  },
+                  '修改备注'
                 )
               ]
               if (params.row.orderStatus === 0) {
@@ -571,6 +843,9 @@ export default {
                       props: {
                         type: 'warning',
                         size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
                       },
                       on: {
                         click: () => {
@@ -713,6 +988,68 @@ export default {
             }
           }
         ],
+        columns2: [
+          {
+            title: '社区Id',
+            align: 'center',
+            key: 'id'
+          },
+          {
+            title: '社区名',
+            align: 'center',
+            key: 'name'
+          },
+          {
+            title: '省份',
+            align: 'center',
+            key: 'province'
+          },
+          {
+            title: '城市',
+            align: 'center',
+            key: 'city'
+          },
+          {
+            title: '县区',
+            align: 'center',
+            key: 'county'
+          },
+          {
+            title: '经度',
+            align: 'center',
+            key: 'lat'
+          },
+          {
+            title: '纬度',
+            align: 'center',
+            key: 'lng'
+          },
+          {
+            title: '操作',
+            key: 'action',
+            width: 200,
+            align: 'center',
+            render: (h, params) => {
+              return h('div', [
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.onSq(params.row)
+                      }
+                    }
+                  },
+                  '选择'
+                )
+              ])
+            }
+          }
+        ],
         data: [],
         pageData: {
           content: [],
@@ -738,21 +1075,42 @@ export default {
           size: 5,
           isFree: 1
         },
+        pageData2: {
+          content: [],
+          pageNum: 1,
+          numberOfElements: 0,
+          total: 0,
+          totalPages: 0
+        },
+        searchCondition2: {
+          page: 1,
+          size: 5
+        },
         pageSizeOpts: [1, 5, 10, 20, 30, 40]
       },
       viewData: {
+        file: '',
+        fileName: '',
+        dateNow: '',
         goodsIId: '',
         Detail: '',
         Employee: {},
         Delete: {},
         Confirm: {},
         Dispatch: {},
+        Add: {},
+        Sq: {},
+        modalAdd: false,
+        modalSq: false,
         modalDelete: false,
         modalDetail: false,
+        modalRemark: false,
         modalEmployee: false,
         modalDispatch: false,
         modalDispatch1: false,
         modalRefuse: false,
+        modalExcel: false,
+        modalDown: false,
         modalPass: false,
         modalTogo: false,
         modalArrive: false,
@@ -846,20 +1204,33 @@ export default {
     }
   },
   methods: {
-    showImg (ad_picture_url) {
-      this.$Modal.info({
-        title: '预览图片',
-        closable: true,
-        content: `<br /><img style="width: 100%" src=${[ad_picture_url]} />`
-      })
+    changeProvince (val) {
+      console.log(this.provinceArr)
+      for (var i = 0; i < this.provinceArr.length; i++) {
+        if (val === this.provinceArr[i].label) {
+          this.citiesArr = this.provinceArr[i].children
+          this.countyArr = []
+        }
+      }
+    },
+    changeCity (val) {
+      for (var i = 0; i < this.citiesArr.length; i++) {
+        if (val === this.citiesArr[i].label) {
+          this.countyArr = this.citiesArr[i].children
+        }
+      }
     },
     onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
     },
     onPageChange1 (pageNum) {
-      this.searchList.searchCondition.page1 = pageNum
+      this.searchList.searchCondition1.page = pageNum
       this.searchManage1()
+    },
+    onPageChange2 (pageNum) {
+      this.searchList.searchCondition2.page = pageNum
+      this.searchSq()
     },
     onDeleteBtn () {
       axios
@@ -889,6 +1260,55 @@ export default {
           this.viewData.Confirm = {}
           this.$Message.success('操作成功!')
           this.searchManage()
+        })
+    },
+    onSq (row) {
+      this.viewData.Sq = row
+      this.viewData.modalSq = false
+    },
+    onRemark () {
+      if (!this.viewData.Confirm.orderExplain) {
+        this.$Message.error('订单备注不能为空')
+        return false
+      }
+      axios
+        .put(
+          '/qsz_pf/order/update',
+          qs.stringify({
+            id: this.viewData.Confirm.id,
+            orderExplain: this.viewData.Confirm.orderExplain
+          })
+        )
+        .then((response) => {
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
+    onAddBtn () {
+      const sq = this.viewData.Sq
+      this.$Message.warning('上传中，请稍后...')
+      axios
+        .post(
+          '/qsz_pf/order/create',
+          qs.stringify({
+            serviceNum: this.viewData.Add.serviceNum,
+            contactName: this.viewData.Add.contactName,
+            contactMobile: this.viewData.Add.contactMobile,
+            contactAddr: sq.province + ',' + sq.city + ',' + sq.county + ',' + sq.name + ',' + this.viewData.Add.addr,
+            lat: sq.lat,
+            lng: sq.lng,
+            yyDate: this.viewData.Add.yyDate,
+            yyTime: this.viewData.Add.yyTime,
+            orderPrice: this.viewData.Add.orderPrice,
+            orderExplain: this.viewData.Add.orderExplain
+          })
+        )
+        .then((response) => {
+          this.viewData.Sq = {}
+          this.viewData.Add = {}
+          this.searchManage()
+          this.$Message.success('添加成功!')
         })
     },
     onTogo (status) {
@@ -951,6 +1371,25 @@ export default {
           this.searchManage()
         })
     },
+    onExcel () {
+      const startDate = this.viewData.Confirm.startDate || this.viewData.dateNow
+      const endDate = this.viewData.Confirm.endDate || this.viewData.dateNow
+      axios
+        .post(
+          '/qsz_pf/order/download_excel',
+          qs.stringify({
+            startDate: startDate,
+            endDate: endDate
+          })
+        )
+        .then((res) => {
+          this.viewData.file =
+            'data:application/vnd.ms-excel;base64,' + res.data.file
+          this.viewData.fileName = `${startDate}至${endDate}的订单列表`
+          this.viewData.modalDown = true
+          // this.viewData.modalExcel = false
+        })
+    },
     onModelCancel () {
       this.searchManage()
     },
@@ -960,9 +1399,23 @@ export default {
       this.viewData.id = row.id
       this.searchDetail()
     },
+    showRemark (row) {
+      this.viewData.modalRemark = true
+      this.viewData.Confirm = row
+      this.viewData.id = row.id
+    },
+    showSq (row) {
+      this.viewData.modalSq = true
+      this.viewData.id = row.id
+      this.searchSq()
+    },
     showEmployee () {
       this.viewData.modalEmployee = true
       this.searchDetailE()
+    },
+    showAdd (item) {
+      this.viewData.Confirm = item
+      this.viewData.modalAdd = true
     },
     showPass (item) {
       this.viewData.Confirm = item
@@ -990,6 +1443,19 @@ export default {
       this.viewData.Confirm = item
       this.viewData.modalRefuse = true
     },
+    showExcel (item) {
+      const date = new Date()
+      this.viewData.dateNow =
+        date.getFullYear() +
+        '-' +
+        ((date.getMonth() + 1).toString().length === 1 ? '0' : '') +
+        (date.getMonth() + 1) +
+        '-' +
+        date.getDate()
+      console.log(this.viewData.dateNow)
+      this.viewData.Confirm = {}
+      this.viewData.modalExcel = true
+    },
     showDelete (item) {
       this.viewData.Delete = item
       this.viewData.modalDelete = true
@@ -1002,6 +1468,11 @@ export default {
     searchPageReturn1 () {
       this.searchList.searchCondition1.page = 1
       this.searchManage1()
+      this.$Message.success('搜索完成!')
+    },
+    searchPageReturn2 () {
+      this.searchList.searchCondition2.page = 1
+      this.searchSq()
       this.$Message.success('搜索完成!')
     },
     searchManage () {
@@ -1039,6 +1510,21 @@ export default {
             this.$Message.error('没有更多数据了')
           }
           this.searchList.pageData1.total = res.data.total
+        })
+    },
+    searchSq () {
+      axios
+        .get('/qsz_pf/housing/list', {
+          params: {
+            page: this.searchList.searchCondition2.page,
+            province: this.searchList.searchCondition2.province || '广东省',
+            city: this.searchList.searchCondition2.city || '广州市',
+            county: this.searchList.searchCondition2.county || '海珠区'
+          }
+        })
+        .then((response) => {
+          this.searchList.pageData2.content = response.data.data
+          this.searchList.pageData2.total = response.data.total
         })
     },
     searchDetail () {

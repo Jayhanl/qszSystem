@@ -192,6 +192,14 @@ export default [{
       title: '数据统计'
     },
     component: () => import('@/view/qsz/data_list.vue')
+  }, {
+    path: 'code_list',
+    name: 'qsz_code_list',
+    meta: {
+      icon: 'ios-barcode-outline',
+      title: '二维码生成'
+    },
+    component: () => import('@/view/qsz/code_list.vue')
   }]
 },
 {
