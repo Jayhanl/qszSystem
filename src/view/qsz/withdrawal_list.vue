@@ -16,11 +16,12 @@
                   v-for="item in viewData.statusList"
                   :value="item.value"
                   :key="item.value"
-                >{{ item.label }}</Option>
+                  >{{ item.label }}</Option
+                >
               </Select>
             </Form-item>
             <Form-item>
-              <Button style="margin-right:10px" @click="searchPageReturn">
+              <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
               <!-- <Button icon="md-add" @click="showCollect()">增加</Button> -->
@@ -35,7 +36,7 @@
               <Form :label-width="80">
                 <Form-item class="form_item">
                   确认拒绝提现订单ID：
-                  <span style="color:red">{{viewData.Confirm.orderId}}</span>
+                  <span style="color: red">{{ viewData.Confirm.orderId }}</span>
                   的审核吗？
                 </Form-item>
                 <Form-item class="form_item" label="拒绝原因:">
@@ -56,39 +57,51 @@
               @on-ok="onAuditBtn(1)"
             >
               确认通过提现订单ID：
-              <span style="color:red">{{viewData.Confirm.orderId}}</span>
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               的审核吗？
             </Modal>
 
             <Modal
               title="查看用户信息详情"
               width="55"
-              :styles="{top: '70px'}"
+              :styles="{ top: '70px' }"
               v-model="viewData.modalDetail"
             >
               <div class="order_info">
                 <h3>用户信息</h3>
                 <Row>
-                  <Col span="10">用户id: {{viewData.Detail.id}}</Col>
-                  <Col span="10">加入时间: {{viewData.Detail.createTime}}</Col>
+                  <Col span="10">用户id: {{ viewData.Detail.id }}</Col>
+                  <Col span="10"
+                    >加入时间: {{ viewData.Detail.createTime }}</Col
+                  >
                   <!-- <Col span="10">用户状态: {{viewData.Detail.vipLevel?'VIP':'普通用户'}}</Col> -->
                 </Row>
                 <Row>
-                  <Col span="10">姓名: {{viewData.Detail.name}}</Col>
-                  <Col span="10">联系电话: {{viewData.Detail.contactMobile}}</Col>
+                  <Col span="10">姓名: {{ viewData.Detail.name }}</Col>
+                  <Col span="10"
+                    >联系电话: {{ viewData.Detail.contactMobile }}</Col
+                  >
                 </Row>
-                <h4>地址: {{viewData.Detail.contactAddr}}</h4>
+                <h4>地址: {{ viewData.Detail.contactAddr }}</h4>
                 <!-- <Row>
                   <Col span="10">房号: {{viewData.Detail.houseNum}}</Col>
                   <Col span="10">户型: {{viewData.Detail.houseSize}}</Col>
                 </Row>-->
                 <Row>
                   <!-- <Col span="10">VIP过期时间: {{viewData.Detail.vipPastTime}}</Col> -->
-                  <Col span="10">汽车外部清洗优惠券: {{viewData.Detail.carDiscountNum}}</Col>
+                  <Col span="10"
+                    >汽车外部清洗优惠券:
+                    {{ viewData.Detail.carDiscountNum }}</Col
+                  >
                 </Row>
                 <Row>
-                  <Col span="10">2小时保洁优惠券: {{viewData.Detail.cleanDiscountNum}}</Col>
-                  <Col span="10">照明安装优惠券: {{viewData.Detail.illDiscountNum}}</Col>
+                  <Col span="10"
+                    >2小时保洁优惠券:
+                    {{ viewData.Detail.cleanDiscountNum }}</Col
+                  >
+                  <Col span="10"
+                    >照明安装优惠券: {{ viewData.Detail.illDiscountNum }}</Col
+                  >
                 </Row>
                 <!-- <Row>
                   <Col span="10">充值VIP次数: {{viewData.Detail.vipCount}}</Col>
@@ -102,12 +115,16 @@
               @on-ok="onDeleteBtn"
             >
               确认删除id为：
-              <span style="color:red">{{viewData.Delete.id}}</span>
+              <span style="color: red">{{ viewData.Delete.id }}</span>
               的信息吗？
             </Modal>
           </Form>
-          <Form-item style="padding-top: 10px;">
-            <i-table border :columns="searchList.columns" :data="searchList.pageData.content"></i-table>
+          <Form-item style="padding-top: 10px">
+            <i-table
+              border
+              :columns="searchList.columns"
+              :data="searchList.pageData.content"
+            ></i-table>
             <Page
               style="padding-top: 10px"
               :total="searchList.pageData.total"
@@ -160,6 +177,11 @@ export default {
             title: '申请时间',
             align: 'center',
             key: 'createTime'
+          },
+          {
+            title: '提现类型',
+            align: 'center',
+            key: 'withdrawalType'
           },
           {
             title: '审核时间',
