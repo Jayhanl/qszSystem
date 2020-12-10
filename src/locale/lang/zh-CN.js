@@ -36,6 +36,7 @@ export default {
   qsz_company_clean: '小程序办公保洁订单',
   qsz_company_clean_h5: 'h5办公保洁订单',
   qsz_company_clean_yy: '办公保洁预约',
-  qsz_code_list: '生成二维码'
+  qsz_code_list: '生成优惠码',
+  qsz_fw_type: '服务分类'
 
 }

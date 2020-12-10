@@ -105,6 +105,14 @@ export default [{
     },
     component: () => import('@/view/qsz/sq_list.vue')
   }, {
+    path: 'fw_type',
+    name: 'qsz_fw_type',
+    meta: {
+      icon: 'ios-list',
+      title: '服务分类'
+    },
+    component: () => import('@/view/qsz/fw_type.vue')
+  }, {
     path: 'fw_list',
     name: 'qsz_fw_list',
     meta: {

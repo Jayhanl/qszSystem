@@ -17,7 +17,7 @@
             </Modal>
             <Modal
               v-model="viewData.modalAdd"
-              title="生成优惠码"
+              title="生成二维码"
               :mask-closable="false"
               @on-ok="onAddBtn"
               width="35"
@@ -33,21 +33,13 @@
                     placeholder="请输入正整数"
                   ></Input>
                 </Form-item>
-                <Form-item class="form_item" label="优惠码说明:">
-                  <Input
-                    style="width: 200px"
-                    v-model="viewData.Add.remark"
-                    :maxlength="200"
-                    placeholder="请输入优惠码说明"
-                  ></Input>
-                </Form-item>
               </Form>
             </Modal>
           </Form>
           <Form-item style="padding-top: 10px">
             <Tabs v-model="viewData.tabId" @on-click="onTabs">
               <TabPane label="任务列表" name="0">
-                <Button icon="md-add" @click="showAdd()">生成优惠码</Button>
+                <Button icon="md-add" @click="showAdd()">生成二维码</Button>
                 <i-table
                   border
                   style="margin-top: 10px"
@@ -64,7 +56,7 @@
                   show-total
                 ></Page> -->
               </TabPane>
-              <TabPane label="优惠码列表" name="1">
+              <TabPane label="二维码列表" name="1">
                 <Input
                   class="search_item"
                   type="text"
@@ -137,14 +129,9 @@ export default {
             key: 'id'
           },
           {
-            title: '生成优惠码数量',
+            title: '生成二维码数量',
             align: 'center',
             key: 'num'
-          },
-          {
-            title: '优惠码说明',
-            align: 'center',
-            key: 'remark'
           },
           {
             title: '生成时间',
@@ -197,7 +184,7 @@ export default {
                       }
                     }
                   },
-                  '下载优惠码压缩包'
+                  '下载二维码压缩包'
                 )
               ])
             }
@@ -225,7 +212,7 @@ export default {
             key: 'statusChina'
           },
           {
-            title: '使用用户id',
+            title: '扫码用户id',
             align: 'center',
             key: 'userId',
             render (h, params) {
@@ -236,7 +223,7 @@ export default {
             }
           },
           {
-            title: '使用时间',
+            title: '扫码时间',
             align: 'center',
             key: 'useTime',
             render (h, params) {
@@ -329,14 +316,13 @@ export default {
     },
     onAddBtn () {
       if (this.viewData.Add.num === '') {
-        this.$Message.error('请输入需要生成优惠码的数量')
+        this.$Message.error('请输入需要生成二维码的数量')
         return
       }
       this.$Message.warning('上传中，请稍后...')
       axios
         .post('/qsz_pf/qr_task/create', {
-          num: parseInt(this.viewData.Add.num),
-          remark: this.viewData.Add.remark
+          num: parseInt(this.viewData.Add.num)
         })
         .then((response) => {
           this.viewData.Add = {}

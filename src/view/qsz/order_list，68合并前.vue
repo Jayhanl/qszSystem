@@ -8,7 +8,7 @@
               <Input
                 class="search_item"
                 type="text"
-                v-model="searchList.searchCondition.orderCode"
+                v-model="searchList.searchCondition.orderId"
                 clearable
                 placeholder="订单ID"
               ></Input>
@@ -34,7 +34,7 @@
                 clearable
                 placeholder="订单状态"
                 @on-change="searchManage"
-                v-model="searchList.searchCondition.status"
+                v-model="searchList.searchCondition.orderStatus"
                 class="search_item"
               >
                 <Option
@@ -54,6 +54,20 @@
                 <Option value="yyDateDesc">预约日期从近到远</Option>
                 <Option value="yyDateAsc">预约日期从远到近</Option>
               </Select>
+              <Select
+                clearable
+                placeholder="是否使用优惠券"
+                @on-change="searchManage"
+                v-model="searchList.searchCondition.discountType"
+                class="search_item"
+              >
+                <Option
+                  v-for="item in viewData.yhqList"
+                  :value="item.value"
+                  :key="item.value"
+                  >{{ item.label }}</Option
+                >
+              </Select>
               <input
                 style="display: none"
                 class="ImgC"
@@ -68,6 +82,9 @@
               <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="18" type="ios-search" />
               </Button>
+              <Button type="success" style="margin-right: 10px" @click="showAdd"
+                >创建订单</Button
+              >
               <Button
                 type="warning"
                 style="margin-right: 10px"
@@ -116,6 +133,108 @@
               <a ref="file" :href="viewData.file" :download="viewData.fileName"
                 >点此下载excel</a
               >
+            </Modal>
+
+            <Modal
+              v-model="viewData.modalAdd"
+              title="创建订单"
+              :mask-closable="false"
+              @on-ok="onAddBtn"
+              width="35"
+              @on-cancel="onModelCancel"
+            >
+              <Form :label-width="80">
+                <Form-item class="form_item" label="联系人:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.contactName"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="联系人"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="联系电话:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.contactMobile"
+                    type="text"
+                    :maxlength="11"
+                    placeholder="联系电话"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单价格:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.orderPrice"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="订单价格"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="服务时长:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Add.serviceNum"
+                    type="text"
+                    :maxlength="20"
+                    placeholder="服务时长"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="预约日期:">
+                  <Date-picker
+                    style="width: 200px"
+                    type="date"
+                    placeholder="预约日期"
+                    @on-change="
+                      (datetime) => {
+                        this.viewData.Add.yyDate = datetime
+                      }
+                    "
+                    v-model="viewData.Add.yyDate"
+                  ></Date-picker>
+                </Form-item>
+                <Form-item class="form_item" label="预约时间:">
+                  <InputNumber
+                    :max="20"
+                    :min="9"
+                    v-model="viewData.Add.yyTime"
+                  ></InputNumber>
+                </Form-item>
+                <Form-item class="form_item" label="选择社区:">
+                  <Input
+                    style="width: 200px"
+                    v-model="viewData.Sq.name"
+                    disabled
+                    placeholder="请选择社区"
+                  ></Input>
+                  <Button
+                    type="success"
+                    style="margin-left: 10px"
+                    @click="showSq"
+                    >选择</Button
+                  >
+                </Form-item>
+                <Form-item class="form_item" label="楼层单元:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Add.addr"
+                    type="textarea"
+                    :rows="2"
+                    :maxlength="200"
+                    placeholder="请填写所在小区的楼层单元"
+                  ></Input>
+                </Form-item>
+                <Form-item class="form_item" label="订单备注:">
+                  <Input
+                    style="width: 300px"
+                    v-model="viewData.Add.orderExplain"
+                    type="textarea"
+                    :rows="4"
+                    :maxlength="500"
+                    placeholder="订单备注"
+                  ></Input>
+                </Form-item>
+              </Form>
             </Modal>
 
             <Modal
@@ -297,7 +416,7 @@
                   确认
                   <span style="color: red; font-size: 22px">取消</span> 订单id：
                   <span style="color: red; font-size: 22px">{{
-                    viewData.Confirm.orderCode
+                    viewData.Confirm.orderId
                   }}</span>
                   吗？
                 </Form-item>
@@ -313,14 +432,45 @@
             </Modal>
             <Modal
               :mask-closable="false"
-              title="受理确认"
+              title="上门确认"
               width="400"
               v-model="viewData.modalTogo"
               @on-ok="onTogo()"
             >
-              确认受理订单id：
-              <span style="color: red">{{ viewData.Confirm.orderCode }}</span>
-              吗？
+              确认订单id：
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
+              已上门吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="到达确认"
+              width="400"
+              v-model="viewData.modalArrive"
+              @on-ok="onArrive()"
+            >
+              确认订单id：
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
+              已到达吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="取消接单员"
+              width="400"
+              v-model="viewData.modalCancelEmp"
+              @on-ok="onCancelEmp()"
+            >
+            <div style="margin-bottom:20px;">
+              确认取消订单id：
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span
+              >的接单员接单吗？</div>
+              <Form-item class="form_item" label="取消原因:">
+                <Input
+                  style="width: 200px"
+                  v-model="viewData.Confirm.reason"
+                  type="text"
+                  placeholder="请输入取消原因"
+                ></Input>
+              </Form-item>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -330,8 +480,98 @@
               @on-ok="onDone()"
             >
               确认已完成订单id：
-              <span style="color: red">{{ viewData.Confirm.orderCode }}</span>
+              <span style="color: red">{{ viewData.Confirm.orderId }}</span>
               吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              title="派遣订单确认"
+              width="400"
+              v-model="viewData.modalDispatch1"
+              @on-ok="onDispatch()"
+            >
+              确认派遣订单给员工：
+              <span style="color: red">{{ viewData.Confirm.name }}</span>
+              吗？
+            </Modal>
+            <Modal
+              :mask-closable="false"
+              :title="'订单：' + viewData.Dispatch.orderId + '派遣'"
+              width="60"
+              v-model="viewData.modalDispatch"
+            >
+              <Form>
+                <Form-item>
+                  <Input
+                    class="search_item"
+                    type="text"
+                    v-model="searchList.searchCondition1.name"
+                    clearable
+                    placeholder="姓名"
+                  ></Input>
+                  <Select
+                    clearable
+                    placeholder="是否空闲"
+                    @on-change="searchManage"
+                    v-model="searchList.searchCondition1.isFree"
+                    class="search_item"
+                  >
+                    <Option
+                      v-for="item in viewData.statusList1"
+                      :value="item.value"
+                      :key="item.value"
+                      >{{ item.label }}</Option
+                    >
+                  </Select>
+                  <Select
+                    clearable
+                    placeholder="员工身份"
+                    @on-change="searchManage"
+                    v-model="searchList.searchCondition1.role"
+                    class="search_item"
+                  >
+                    <Option
+                      v-for="item in viewData.roleList"
+                      :value="item.value"
+                      :key="item.value"
+                      >{{ item.label }}</Option
+                    >
+                  </Select>
+                  <Select
+                    clearable
+                    placeholder="派单模式"
+                    @on-change="searchManage"
+                    v-model="searchList.searchCondition1.orderModel"
+                    class="search_item"
+                  >
+                    <Option
+                      v-for="item in viewData.pdList"
+                      :value="item.value"
+                      :key="item.value"
+                      >{{ item.label }}</Option
+                    >
+                  </Select>
+                  <Button style="margin-right: 10px" @click="searchPageReturn1">
+                    <Icon size="18" type="ios-search" />
+                  </Button>
+                </Form-item>
+                <Form-item style="padding-top: 10px">
+                  <i-table
+                    border
+                    :columns="searchList.columns1"
+                    :data="searchList.pageData1.content"
+                  ></i-table>
+                  <Page
+                    style="padding-top: 10px"
+                    :total="searchList.pageData1.total"
+                    :current="searchList.searchCondition1.page"
+                    :page-size="10"
+                    @on-change="onPageChange1"
+                    size="small"
+                    show-total
+                  ></Page>
+                </Form-item>
+              </Form>
             </Modal>
             <Modal
               :mask-closable="false"
@@ -340,7 +580,7 @@
               @on-ok="onDeleteBtn"
             >
               确认删除订单id为：
-              <span style="color: red">{{ viewData.Delete.orderCode }}</span>
+              <span style="color: red">{{ viewData.Delete.orderId }}</span>
               的订单吗？
             </Modal>
             <Modal
@@ -352,9 +592,9 @@
               <div class="order_info">
                 <h3>订单信息</h3>
                 <Row>
-                  <Col span="10">订单id: {{ viewData.Detail.orderCode }}</Col>
+                  <Col span="10">订单id: {{ viewData.Detail.orderId }}</Col>
                   <Col span="10"
-                    >订单状态: {{ viewData.Detail.statusChina }}</Col
+                    >订单状态: {{ viewData.Detail.orderStatusChina }}</Col
                   >
                 </Row>
                 <Row>
@@ -381,6 +621,9 @@
                 </Row>
                 <Row>
                   <Col span="10">客户Id: {{ viewData.Detail.userId }}</Col>
+                  <Col span="10"
+                    >优惠券: {{ viewData.Detail.discountTypeChina }}</Col
+                  >
                 </Row>
                 <h4>详细地址: {{ viewData.Detail.contactAddr }}</h4>
                 <h4>订单备注: {{ viewData.Detail.orderExplain }}</h4>
@@ -397,6 +640,151 @@
                   <Col span="10">预约日期: {{ viewData.Detail.yyDate }}</Col>
                   <Col span="10">预约时间: {{ viewData.Detail.yyTime }} 点</Col>
                 </Row>
+                <div
+                  v-if="
+                    viewData.Detail.employeeId !== 0 &&
+                    viewData.Detail.orderStatus !== 0 &&
+                    viewData.Detail.orderStatus !== 1
+                  "
+                >
+                  <h3>
+                    员工信息
+                    <Button
+                      style="margin-left: 10px"
+                      type="primary"
+                      @click="showEmployee"
+                      >员工详情</Button
+                    >
+                  </h3>
+                  <Row>
+                    <Col span="10"
+                      >员工编号: {{ viewData.Detail.employeeId }}</Col
+                    >
+                    <Col span="10">员工姓名: {{ viewData.Detail.name }}</Col>
+                  </Row>
+                  <h3>员工上传照片</h3>
+                  <Row>
+                    <Col span="4">订单到达照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.arriveImg"
+                        class="img_item"
+                        preview="0"
+                        preview-text="订单到达照片"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="4">订单完成照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Detail.doneImg"
+                        class="img_item"
+                        preview="1"
+                        preview-text="订单完成照片"
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+            </Modal>
+            <Modal
+              title="查看员工信息详情"
+              width="55"
+              :styles="{ top: '70px' }"
+              v-model="viewData.modalEmployee"
+            >
+              <div class="order_info">
+                <h3>用户信息</h3>
+                <Row>
+                  <Col span="10">用户id: {{ viewData.Employee.id }}</Col>
+                  <Col span="10">身份: {{ viewData.Employee.roleChina }}</Col>
+                </Row>
+                <Row>
+                  <Col span="10">姓名: {{ viewData.Employee.name }}</Col>
+                  <Col span="10"
+                    >账号(电话): {{ viewData.Employee.account }}</Col
+                  >
+                </Row>
+                <Row>
+                  <Col span="10">性别: {{ viewData.Employee.idcGender }}</Col>
+                  <Col span="10">身份证号: {{ viewData.Employee.idcId }}</Col>
+                </Row>
+                <h4>身份证地址: {{ viewData.Employee.idcAddr }}</h4>
+                <Row>
+                  <Col span="10"
+                    >审核状态: {{ viewData.Employee.statusChina }}</Col
+                  >
+                  <Col span="10"
+                    >接单模式: {{ viewData.Employee.orderModelChina }}</Col
+                  >
+                </Row>
+                <Row>
+                  <Col span="10"
+                    >加入时间: {{ viewData.Employee.createTime }}</Col
+                  >
+                  <Col span="10"
+                    >邀请码: {{ viewData.Employee.empInvCode }}</Col
+                  >
+                </Row>
+                <Row v-if="viewData.Employee.role === 2">
+                  <Col span="10"
+                    >合伙人期限: {{ viewData.Employee.payRentDate }}</Col
+                  >
+                </Row>
+                <h3>钱包信息</h3>
+                <Row>
+                  <Col span="10"
+                    >推广收入: {{ viewData.Employee.awardTotal }}元</Col
+                  >
+                  <Col span="10"
+                    >订单总收入: {{ viewData.Employee.earningTotal }}元</Col
+                  >
+                </Row>
+                <Row>
+                  <Col span="10">余额: {{ viewData.Employee.balance }}元</Col>
+                  <Col span="10"
+                    >可提现金额: {{ viewData.Employee.desirableBalance }}元</Col
+                  >
+                </Row>
+                <div v-if="viewData.Employee.isMainland">
+                  <h3>身份证照片</h3>
+                  <Row>
+                    <Col span="4">身份证人像面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.idcFront"
+                        class="img_item"
+                        preview="3"
+                        preview-text="身份证人像面"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span="4">身份证国徽面</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.idcBack"
+                        class="img_item"
+                        preview="4"
+                        preview-text="身份证国徽面"
+                      />
+                    </Col>
+                  </Row>
+                </div>
+                <div v-else-if="viewData.Employee.selfie">
+                  <Row>
+                    <Col span="4">本人真实照片</Col>
+                    <Col span="18">
+                      <img
+                        :src="viewData.Employee.selfie"
+                        class="img_item"
+                        preview="5"
+                        preview-text="本人真实照片"
+                      />
+                    </Col>
+                  </Row>
+                </div>
               </div>
             </Modal>
           </Form>
@@ -441,7 +829,7 @@ export default {
           {
             title: '订单Id',
             align: 'center',
-            key: 'orderCode'
+            key: 'orderId'
           },
           {
             title: '客户姓名',
@@ -452,6 +840,11 @@ export default {
             title: '联系电话',
             align: 'center',
             key: 'contactMobile'
+          },
+          {
+            title: '优惠券',
+            align: 'center',
+            key: 'discountTypeChina'
           },
           {
             title: '服务',
@@ -479,7 +872,7 @@ export default {
           {
             title: '订单状态',
             align: 'center',
-            key: 'statusChina'
+            key: 'orderStatusChina'
           },
           {
             title: '创建时间',
@@ -510,24 +903,24 @@ export default {
                     }
                   },
                   '详情'
+                ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.showEdit(params.row)
+                      }
+                    }
+                  },
+                  '编辑'
                 )
-                //   h(
-                //     'Button',
-                //     {
-                //       props: {
-                //         type: 'primary',
-                //         size: 'small'
-                //       },
-                //       on: {
-                //         click: () => {
-                //           this.showEdit(params.row)
-                //         }
-                //       }
-                //     },
-                //     '编辑'
-                //   )
               ]
-              if (params.row.status === 0) {
+              if (params.row.orderStatus === 0) {
                 arr.push(
                   h(
                     'Button',
@@ -545,7 +938,80 @@ export default {
                     '取消'
                   )
                 )
-              } else if (params.row.status === 1) {
+              }
+              if (params.row.orderStatus === 1) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'warning',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showDispatch(params.row)
+                        }
+                      }
+                    },
+                    '派遣员工'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showRefuse(params.row)
+                        }
+                      }
+                    },
+                    '取消'
+                  )
+                )
+              } else if (params.row.orderStatus === 2) {
+                arr.push(
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'primary',
+                        size: 'small'
+                      },
+                      style: {
+                        marginRight: '15px'
+                      },
+                      on: {
+                        click: () => {
+                          this.showTogo(params.row)
+                        }
+                      }
+                    },
+                    '上门'
+                  ),
+                  h(
+                    'Button',
+                    {
+                      props: {
+                        type: 'error',
+                        size: 'small'
+                      },
+                      on: {
+                        click: () => {
+                          this.showCancel(params.row)
+                        }
+                      }
+                    },
+                    '取消接单员'
+                  )
+                )
+              } else if (params.row.orderStatus === 3) {
                 arr.push(
                   h(
                     'Button',
@@ -556,14 +1022,14 @@ export default {
                       },
                       on: {
                         click: () => {
-                          this.showTogo(params.row)
+                          this.showArrive(params.row)
                         }
                       }
                     },
-                    '受理'
+                    '到达'
                   )
                 )
-              } else if (params.row.status === 2) {
+              } else if (params.row.orderStatus === 4) {
                 arr.push(
                   h(
                     'Button',
@@ -582,6 +1048,64 @@ export default {
                   )
                 )
               }
+              return h('div', arr)
+            }
+          }
+        ],
+        columns1: [
+          {
+            title: '员工编号',
+            align: 'center',
+            key: 'id'
+          },
+          {
+            title: '姓名',
+            align: 'center',
+            key: 'name'
+          },
+          {
+            title: '账号(电话)',
+            align: 'center',
+            key: 'account'
+          },
+          {
+            title: '身份',
+            align: 'center',
+            key: 'roleChina'
+          },
+          {
+            title: '派单模式',
+            align: 'center',
+            key: 'orderModelChina'
+          },
+          {
+            title: '空闲状态',
+            align: 'center',
+            key: 'freeStatus'
+          },
+          {
+            title: '操作',
+            key: 'action',
+            width: 200,
+            align: 'center',
+            render: (h, params) => {
+              const arr = [
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.showDispatch1(params.row)
+                      }
+                    }
+                  },
+                  '确认派遣'
+                )
+              ]
               return h('div', arr)
             }
           }
@@ -722,14 +1246,26 @@ export default {
           },
           {
             value: 1,
-            label: '待受理'
+            label: '待接单'
           },
           {
             value: 2,
-            label: '待完成'
+            label: '待上门'
           },
           {
             value: 3,
+            label: '待到达'
+          },
+          {
+            value: 4,
+            label: '待完成'
+          },
+          {
+            value: 5,
+            label: '待用户评价'
+          },
+          {
+            value: 6,
             label: '已完成'
           },
           {
@@ -741,6 +1277,20 @@ export default {
             label: '退款中'
           }
         ],
+        roleList: [
+          {
+            value: 0,
+            label: '未注册'
+          },
+          {
+            value: 1,
+            label: '公司员工'
+          },
+          {
+            value: 2,
+            label: '合伙人'
+          }
+        ],
         statusList1: [
           {
             value: 0,
@@ -749,6 +1299,30 @@ export default {
           {
             value: 1,
             label: '空闲中'
+          }
+        ],
+        pdList: [
+          {
+            value: 1,
+            label: '接收派单'
+          },
+          {
+            value: 2,
+            label: '直接受强制派单'
+          },
+          {
+            value: 3,
+            label: '不接受派单'
+          }
+        ],
+        yhqList: [
+          {
+            value: 0,
+            label: '未使用'
+          },
+          {
+            value: 1,
+            label: '使用优惠券'
           }
         ]
       }
@@ -853,10 +1427,45 @@ export default {
           this.$Message.success('编辑成功!')
         })
     },
+    onAddBtn () {
+      const sq = this.viewData.Sq
+      this.$Message.warning('上传中，请稍后...')
+      axios
+        .post(
+          '/qsz_pf/order/create',
+          qs.stringify({
+            serviceNum: this.viewData.Add.serviceNum,
+            contactName: this.viewData.Add.contactName,
+            contactMobile: this.viewData.Add.contactMobile,
+            contactAddr:
+              sq.province +
+              ',' +
+              sq.city +
+              ',' +
+              sq.county +
+              ',' +
+              sq.name +
+              ',' +
+              this.viewData.Add.addr,
+            lat: sq.lat,
+            lng: sq.lng,
+            yyDate: this.viewData.Add.yyDate,
+            yyTime: this.viewData.Add.yyTime,
+            orderPrice: this.viewData.Add.orderPrice,
+            orderExplain: this.viewData.Add.orderExplain
+          })
+        )
+        .then((response) => {
+          this.viewData.Sq = {}
+          this.viewData.Add = {}
+          this.searchManage()
+          this.$Message.success('添加成功!')
+        })
+    },
     onTogo (status) {
       axios
         .put(
-          '/qsz_pf/order/accept',
+          '/qsz_pf/order/to_go',
           qs.stringify({
             id: this.viewData.Confirm.id
           })
@@ -891,6 +1500,39 @@ export default {
           })
         )
         .then((response) => {
+          this.viewData.Confirm = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
+    onDispatch (status) {
+      axios
+        .post(
+          '/qsz_pf/order/distribute',
+          qs.stringify({
+            id: this.viewData.Dispatch.id,
+            employeeId: this.viewData.Confirm.id
+          })
+        )
+        .then((response) => {
+          this.viewData.modalDispatch = false
+          this.viewData.Confirm = {}
+          this.viewData.Dispatch = {}
+          this.$Message.success('操作成功!')
+          this.searchManage()
+        })
+    },
+    onCancelEmp () {
+      axios
+        .put(
+          '/qsz_pf/order/cancel_emp',
+          qs.stringify({
+            id: this.viewData.Confirm.id,
+            reason: this.viewData.Confirm.reason || ''
+          })
+        )
+        .then((response) => {
+          this.viewData.modalCancelEmp = false
           this.viewData.Confirm = {}
           this.$Message.success('操作成功!')
           this.searchManage()
@@ -1018,16 +1660,36 @@ export default {
         .get('/qsz_pf/order/list', {
           params: {
             page: this.searchList.searchCondition.page,
-            orderCode: this.searchList.searchCondition.orderCode,
+            orderId: this.searchList.searchCondition.orderId,
             contactMobile: this.searchList.searchCondition.contactMobile,
             yyDate: this.searchList.searchCondition.yyDate,
             order: this.searchList.searchCondition.order,
-            status: this.searchList.searchCondition.status
+            orderStatus: this.searchList.searchCondition.orderStatus,
+            discountType: this.searchList.searchCondition.discountType
           }
         })
         .then((res) => {
           this.searchList.pageData.content = res.data.data
           this.searchList.pageData.total = res.data.total
+        })
+    },
+    searchManage1 () {
+      axios
+        .get('/qsz_pf/employee/work_list', {
+          params: {
+            page: this.searchList.searchCondition1.page,
+            name: this.searchList.searchCondition1.name,
+            orderModel: this.searchList.searchCondition1.orderModel,
+            isFree: this.searchList.searchCondition1.isFree,
+            role: this.searchList.searchCondition1.role
+          }
+        })
+        .then((res) => {
+          this.searchList.pageData1.content = res.data.data
+          if (res.data.data.length === 0) {
+            this.$Message.error('没有更多数据了')
+          }
+          this.searchList.pageData1.total = res.data.total
         })
     },
     searchSq () {

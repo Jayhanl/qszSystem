@@ -5,11 +5,35 @@
         <Form-item>
           <Form inline>
             <Form-item>
+              <Select
+                clearable
+                placeholder="服务分类"
+                @on-change="searchManage"
+                v-model="searchList.searchCondition.serviceType"
+                class="search_item"
+              >
+                <Option
+                  v-for="item in viewData.fwList"
+                  :value="item.id"
+                  :key="item.id"
+                  >{{ item.name }}</Option
+                >
+              </Select>
+            </Form-item>
+            <Form-item>
               <Button style="margin-right: 10px" @click="searchPageReturn">
                 <Icon size="20" type="ios-search" />
               </Button>
               <Button icon="md-add" @click="showAdd()">增加</Button>
             </Form-item>
+            <Modal
+              :mask-closable="false"
+              width="400"
+              v-model="viewData.modalSiteDeleteImg"
+              @on-ok="delImg(viewData.delInd)"
+            >
+              <span style="color: red">是否删除该图片</span>
+            </Modal>
             <Modal
               :mask-closable="false"
               width="400"
@@ -65,9 +89,9 @@
                   >
                     <Option
                       v-for="item in viewData.fwList"
-                      :value="item.value"
-                      :key="item.value"
-                      >{{ item.label }}</Option
+                      :value="item.id"
+                      :key="item.id"
+                      >{{ item.name }}</Option
                     >
                   </Select>
                 </Form-item>
@@ -88,6 +112,52 @@
                     :maxlength="4"
                     placeholder="排序序号"
                   ></Input>
+                </Form-item>
+                <Form-item
+                  style="margin-top: -15px; padding-right: 10px"
+                  label="服务详情图："
+                >
+                  <div>
+                    <Button class="choice_img">
+                      <Icon type="ios-cloud-upload-outline"></Icon>上传图片
+                      <input
+                        multiple
+                        class="ImgC"
+                        type="file"
+                        name="avatar"
+                        accept="image/gif, image/jpeg, image/jpg, image/png"
+                        @change="changeImage($event)"
+                        ref="avatarInput"
+                      />
+                      <input
+                        style="display: none"
+                        type="file"
+                        name="avatar"
+                        accept="image/gif, image/jpeg, image/jpg, image/png"
+                        @change="changeImage1($event)"
+                        ref="avatarInput1"
+                      />
+                    </Button>
+                  </div>
+                </Form-item>
+                <Form-item class="img_container">
+                  <div
+                    v-for="(item, index) in viewData.Img"
+                    :key="index"
+                    style="position: relative; margin: 0 1%; display: flex"
+                  >
+                    <img
+                      @click="changeImg(index)"
+                      :src="item"
+                      style="width: 110px; height: 110px"
+                    />
+                    <Icon
+                      @click="delImg(index)"
+                      size="18"
+                      style="position: absolute; top: 5px; right: 5px"
+                      type="md-close-circle"
+                    />
+                  </div>
                 </Form-item>
               </Form>
             </Modal>
@@ -136,9 +206,9 @@
                   >
                     <Option
                       v-for="item in viewData.fwList"
-                      :value="item.value"
-                      :key="item.value"
-                      >{{ item.label }}</Option
+                      :value="item.id"
+                      :key="item.id"
+                      >{{ item.name }}</Option
                     >
                   </Select>
                 </Form-item>
@@ -159,6 +229,52 @@
                     :maxlength="4"
                     placeholder="排序序号"
                   ></Input>
+                </Form-item>
+                <Form-item
+                  style="margin-top: -15px; padding-right: 10px"
+                  label="服务详情图："
+                >
+                  <div>
+                    <Button class="choice_img">
+                      <Icon type="ios-cloud-upload-outline"></Icon>上传图片
+                      <input
+                        multiple
+                        class="ImgC"
+                        type="file"
+                        name="avatar"
+                        accept="image/gif, image/jpeg, image/jpg, image/png"
+                        @change="changeImage($event)"
+                        ref="avatarInput"
+                      />
+                      <input
+                        style="display: none"
+                        type="file"
+                        name="avatar"
+                        accept="image/gif, image/jpeg, image/jpg, image/png"
+                        @change="changeImage1($event)"
+                        ref="avatarInput1"
+                      />
+                    </Button>
+                  </div>
+                </Form-item>
+                <Form-item class="img_container">
+                  <div
+                    v-for="(item, index) in viewData.Img"
+                    :key="index"
+                    style="position: relative; margin: 0 1%; display: flex"
+                  >
+                    <img
+                      @click="changeImg(index)"
+                      :src="item"
+                      style="width: 110px; height: 110px"
+                    />
+                    <Icon
+                      @click="showDelImg(index)"
+                      size="18"
+                      style="position: absolute; top: 5px; right: 5px"
+                      type="md-close-circle"
+                    />
+                  </div>
                 </Form-item>
               </Form>
             </Modal>
@@ -344,26 +460,88 @@ export default {
           serviceName: '',
           listOrder: ''
         },
-        fwList: [
-          {
-            value: 1,
-            label: '家政清洁'
-          },
-          {
-            value: 2,
-            label: '钟点保姆'
-          }
-        ],
-        ImgSrc: '',
+        fwList: [],
+        Img: [],
+        delInd: '',
         pList: [],
         modalEdit: false,
         modalAdd: false,
         modalDelete: false,
+        modalSiteDeleteImg: false,
         Delete: ''
       }
     }
   },
   methods: {
+    // 图片操作
+    changeImage (e) {
+      const file = e.target.files
+      const that = this
+      const reader = new FileReader()
+      if (that.viewData.Img.length + file.length > 10) {
+        this.$Message.error('地点图只能上传10张图片！')
+        this.$refs.avatarInput.value = ''
+        return false
+      }
+      for (let i = 0; i < file.length; i++) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file[i])
+        reader.onload = function (e) {
+          console.log(that.viewData.Img)
+          that.viewData.Img.push(this.result)
+        }
+      }
+    },
+    changeImage1 (e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      const that = this
+      reader.readAsDataURL(file)
+      reader.onload = function (e) {
+        that.viewData.Img.splice(that.viewData.ImgId, 1, this.result)
+      }
+    },
+    changeImg (index) {
+      let img = this.viewData.Img[index]
+      const find = this.viewData.Img[index].indexOf('https://')
+      if (find === 0) {
+        const ind = img.indexOf('?time=')
+        img = img.substring(0, ind)
+        this.viewData.ImgDel.push(img)
+      }
+      this.viewData.ImgId = index
+      this.$refs.avatarInput1.value = ''
+      this.$refs.avatarInput1.click()
+    },
+    delImg (index) {
+      const img = this.viewData.Img[index]
+      const find = img.indexOf('https://')
+      if (find === 0) {
+        this.onDeleteImg(img)
+        // let ind = img.indexOf('?time=')
+        // img = img.substring(0, ind)
+        // this.viewData.ImgDel.push(img);
+      }
+      this.viewData.Img.splice(index, 1)
+      this.$refs.avatarInput.value = ''
+    },
+    showDelImg (index) {
+      this.viewData.delInd = index
+      this.viewData.modalSiteDeleteImg = true
+    },
+    onDeleteImg (img) {
+      axios
+        .delete('/qsz_pf/item/delete_image', {
+          data: {
+            image_url: img,
+            id: this.viewData.Edit.id
+          }
+        })
+        .then((response) => {
+          this.$Message.success('删除成功!')
+          this.searchSite()
+        })
+    },
     onPageChange (pageNum) {
       this.searchList.searchCondition.page = pageNum
       this.searchManage()
@@ -386,6 +564,10 @@ export default {
         this.$Message.error('请输入服务项目名')
         return
       }
+      if (this.viewData.Img.length === 0) {
+        this.$Message.error('请至少上传一张服务详情图')
+        return
+      }
       this.$Message.warning('上传中，请稍后...')
       axios
         .post(
@@ -396,11 +578,14 @@ export default {
             serviceType: this.viewData.Add.serviceType,
             tips: this.viewData.Add.tips || '',
             unit: this.viewData.Add.unit,
-            listOrder: this.viewData.Add.listOrder
+            listOrder: this.viewData.Add.listOrder,
+            imageList: this.viewData.Img
           })
         )
         .then((response) => {
           this.viewData.Add = {}
+          this.viewData.Img = []
+          this.$refs.avatarInput.value = ''
           this.searchManage()
           this.$Message.success('添加成功!')
         })
@@ -410,6 +595,10 @@ export default {
         this.$Message.error('请输入服务项目名')
         return
       }
+      const Img = this.viewData.Img.filter(
+        (item) => item.indexOf('https://') === -1
+      )
+      console.log(Img)
       this.$Message.warning('上传中，请稍后...')
       axios
         .put(
@@ -421,11 +610,14 @@ export default {
             serviceType: this.viewData.Edit.serviceType,
             tips: this.viewData.Edit.tips || '',
             unit: this.viewData.Edit.unit,
-            listOrder: this.viewData.Edit.listOrder
+            listOrder: this.viewData.Edit.listOrder,
+            imageList: Img.length === 0 ? '' : Img
           })
         )
         .then((response) => {
           this.viewData.Edit = {}
+          this.viewData.Img = []
+          this.$refs.avatarInput.value = ''
           this.searchManage()
           this.$Message.success('编辑成功!')
         })
@@ -437,11 +629,12 @@ export default {
       this.searchManage()
     },
     showAdd () {
-      this.viewData.ImgSrc = ''
+      this.viewData.Img = []
+      this.$refs.avatarInput.value = ''
       this.viewData.modalAdd = true
     },
     showEdit (item) {
-      this.viewData.ImgSrc = item.imageSrc
+      this.viewData.Img = item.imageList || []
       this.viewData.Edit = item
       this.viewData.modalEdit = true
     },
@@ -458,17 +651,24 @@ export default {
       axios
         .get('/qsz_pf/item/list', {
           params: {
-            page: this.searchList.searchCondition.page
+            page: this.searchList.searchCondition.page,
+            serviceType: this.searchList.searchCondition.serviceType
           }
         })
         .then((response) => {
           this.searchList.pageData.content = response.data.data
           this.searchList.pageData.total = response.data.total
         })
+    },
+    searchManage1 () {
+      axios.get('/qsz_pf/item_type/list').then((response) => {
+        this.viewData.fwList = response.data.filter((item) => item.status)
+      })
     }
   },
   created () {
     this.searchManage()
+    this.searchManage1()
   }
 }
 </script>
@@ -527,5 +727,13 @@ export default {
 
 .imgMax {
   max-width: 300px;
+}
+.img_container {
+  width: 100%;
+}
+
+.img_container .ivu-form-item-content {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>
